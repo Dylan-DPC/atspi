@@ -247,7 +247,7 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 	}
 	async fn find_inner<'a>(
 		&self,
-		after_or_before: i32,
+		before_or_after: i32,
 		matcher_args: &MatcherArgs,
 		backward: bool,
 		recur: bool,
@@ -265,8 +265,8 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 		for child in children {
 			let child_index = child.get_index_in_parent().await?;
 			if !recur
-				&& ((child_index <= after_or_before && !backward)
-					|| (child_index >= after_or_before && backward))
+				&& ((child_index <= before_or_after && !backward)
+					|| (child_index >= before_or_after && backward))
 			{
 				continue;
 			}
@@ -274,7 +274,8 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 				return Ok(Some(child));
 			}
 			/* 0 here is ignored because we are recursive; see the line starting with if !recur */
-			if let Some(found_descendant) = child.find_inner(0, matcher_args, backward, true).await?
+			if let Some(found_descendant) =
+				child.find_inner(0, matcher_args, backward, true).await?
 			{
 				return Ok(Some(found_descendant));
 			}
