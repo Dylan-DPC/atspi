@@ -274,9 +274,9 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 				return Ok(Some(child));
 			}
 			/* 0 here is ignored because we are recursive; see the line starting with if !recur */
-			if let Some(found_decendant) = child.find_inner(0, matcher_args, backward, true).await?
+			if let Some(found_descendant) = child.find_inner(0, matcher_args, backward, true).await?
 			{
-				return Ok(Some(found_decendant));
+				return Ok(Some(found_descendant));
 			}
 		}
 		Ok(None)
