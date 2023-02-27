@@ -218,7 +218,7 @@ mod tests {
 	fn deserialize_large_num_object_path() {
 		let root_str = "/org/a11y/atspi/accessible/123923283733455";
 		let id = AccessibleId::try_from(root_str).expect("Can not deserialize {root_str}");
-		assert_eq!(id, AccessibleId::Number(123923283733455));
+		assert_eq!(id, AccessibleId::Number(123_923_283_733_455));
 	}
 	#[test]
 	fn serialize_root_object_path() {
@@ -248,7 +248,7 @@ mod tests {
 	// this test is specifically because we nned to check for i64-sized numbers.
 	#[test]
 	fn serialize_large_num_object_path() {
-		let id = AccessibleId::Number(123923283733455);
+		let id = AccessibleId::Number(123_923_283_733_455);
 		let large_str = serde_plain::to_string(&id).expect("Could not deserialize {id}");
 		assert_eq!(large_str, "/org/a11y/atspi/accessible/123923283733455".to_string());
 	}
