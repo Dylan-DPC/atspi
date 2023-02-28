@@ -12,8 +12,16 @@ use crate::{
 use async_trait::async_trait;
 use std::collections::HashMap;
 
-pub type MatcherArgs =
-	(Vec<Role>, MatchType, HashMap<String, String>, MatchType, InterfaceSet, MatchType);
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub struct MatcherArgs {
+	roles: Vec<Role>,
+	role_mt: MatchType,
+	attr: HashMap<String, String>,
+	attr_mt: MatchType,
+	ifaces: InterfaceSet,
+	ifaces_mt: MatchType,
+}
 
 #[async_trait]
 pub trait AccessibleExt {
@@ -287,7 +295,7 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 		&self,
 		matcher_args: &MatcherArgs,
 	) -> Result<bool, <Self as AccessibleExt>::Error> {
-		let roles = &matcher_args.0;
+		let roles = &matcher_args.roles;
 		if roles.len() != 1 {
 			return Ok(false);
 		}
