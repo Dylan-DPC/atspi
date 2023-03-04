@@ -180,27 +180,42 @@ impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleE
 			.collect();
 		Ok(children)
 	}
-	async fn get_children_caret<'a>(&self, backward: bool) -> Result<Vec<Self>, Self::Error>
+
+	/// Return 'hyperlink children' before and after the caret position, if hyperlink child objects exist.
+	///
+	/// If hyperlink objects'  'IndexAtStart' property does not yield a value, then these children are found in a third vector.
+	///
+	/// # Errors
+	/// This function assumes all children of a text-object are hyperlinks.
+	/// If that assumption proves false it yields an Error.
+	async fn get_hyperlinks_adjacent_to_caret<'a>(&self) -> Result<[Vec<Self>; 3], Self::Error>
 	where
 		Self: Sized,
 	{
-		let mut children_after_before = Vec::new();
+		// If 'self' is text-object, get caret-offset, or bail.
 		let text_iface = self.to_text().await?;
 		let caret_pos = text_iface.caret_offset().await?;
-		let children_hyperlink = self.get_children_ext().await?;
-		for child in children_hyperlink {
+
+		// Collect the text-object's children.
+		// Collect in either of three categories:
+		let mut lhs = Vec::new();
+		let mut rhs = Vec::new();
+		let mut unknown = Vec::new();
+
+		// This function assumes text-object children are hyperlinks.
+		// If they are not, we would like to know.
+		let text_children = self.get_children_ext().await?;
+		for child in text_children {
+			// If any of the children is not a hyperlink, we bail.
 			let hyperlink = child.to_hyperlink().await?;
-			if let Ok(start_index) = hyperlink.start_index().await {
-				if (start_index <= caret_pos && backward) || (start_index >= caret_pos && !backward)
-				{
-					children_after_before.push(child);
-				}
-			// include all children which do not identify their positions, for some reason
-			} else {
-				children_after_before.push(child);
+			match hyperlink.start_index().await {
+				Ok(start_idx) if start_idx <= caret_pos => lhs.push(child),
+				Ok(start_idx) if start_idx >= caret_pos => rhs.push(child),
+				_ => unknown.push(child),
 			}
 		}
-		Ok(children_after_before)
+
+		Ok([lhs, rhs, unknown])
 	}
 	async fn get_next<'a>(
 		&self,
