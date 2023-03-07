@@ -98,20 +98,18 @@ pub trait AccessibleBlockingExtError: AccessibleBlocking + ConvertableBlocking {
 }
 
 #[async_trait]
-impl<T: Accessible + Convertable + AccessibleExtError + Send + Sync> AccessibleExt for T {
-	type Error = <T as AccessibleExtError>::Error;
-	async fn get_parent_ext<'a>(&self) -> Result<Self, Self::Error>
-	where
-		Self: Sized,
-	{
-		Ok(self.parent().await?)
-	}
-	async fn get_children_indexes<'a>(&self) -> Result<Vec<i32>, Self::Error> {
-		let mut indexes = Vec::new();
-		for child in self.get_children_ext().await? {
-			indexes.push(child.get_index_in_parent().await?);
+impl<T: Accessible + Convertable> AccessibleExt for T {
+	type Error = crate::AtspiError;
+
+	/// Retrieves children with their respective indexes in parent, the current `Accessible`.
+	async fn get_indexed_children<'a>(&self) -> Result<Vec<(i32, Self)>, Self::Error> {
+		let children = self.get_children().await?;
+		let mut indexed: Vec<(i32, Self)> = Vec::with_capacity(children.len());
+		for child in children {
+			let idx = child.get_index_in_parent().await?;
+			indexed.push((idx, child));
 		}
-		Ok(indexes)
+		Ok(indexed)
 	}
 	async fn get_children_ext<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
