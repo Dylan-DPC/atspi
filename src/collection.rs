@@ -16,17 +16,108 @@ use crate::atspi_proxy;
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::Type;
 
-pub type MatchArgs<'a> = (
-	&'a [i32],
-	MatchType,
-	std::collections::HashMap<&'a str, &'a str>,
-	MatchType,
-	&'a [i32],
-	MatchType,
-	&'a [&'a str],
-	MatchType,
-	bool,
-);
+/// Rule(s) against which we can match a collection of objects.
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct MatchRule {
+	pub states: StateSet,
+	pub states_mt: MatchType,
+	pub attr: HashMap<String, String>,
+	pub attr_mt: MatchType,
+	pub roles: Vec<Role>,
+	pub roles_mt: MatchType,
+	pub ifaces: InterfaceSet,
+	pub ifaces_mt: MatchType,
+	pub invert: bool,
+	// Private phantom, gets compiled away.
+	// Here to ensure the builder is the only route to obtain a `MatchRule`
+	phantom: std::marker::PhantomData<()>,
+}
+
+// TODO: Can we tie this to the XML defined signature directly?
+#[test]
+fn match_rule_derived_dbus_signature_corresponds_xml_signature() {
+	let signature = MatchRule::signature();
+	assert_eq!("(aiia{ss}iaiiasib)", signature.as_str())
+}
+
+/// The 'builder' type for `MatchRule`.
+/// Use its methods to set match criteria.
+#[derive(Debug, Clone, Default)]
+pub struct MatchRuleBuilder {
+	states: StateSet,
+	states_mt: MatchType,
+	attr: HashMap<String, String>,
+	attr_mt: MatchType,
+	roles: Vec<Role>,
+	roles_mt: MatchType,
+	ifaces: InterfaceSet,
+	ifaces_mt: MatchType,
+	invert: bool,
+}
+
+impl MatchRule {
+	fn builder() -> MatchRuleBuilder {
+		MatchRuleBuilder::default()
+	}
+}
+
+impl MatchRuleBuilder {
+	/// Insert a `StateSet` to the builder
+	pub fn states(mut self, state_set: StateSet, mt: MatchType) -> Self {
+		self.states = state_set;
+		self.states_mt = mt;
+		self
+	}
+
+	// TODO: Add method to add add a single state
+	// check if the StateSet is Some, add it, else create and add it.
+
+	/// Insert a map of attributes
+	pub fn attributes(mut self, attributes: HashMap<String, String>, mt: MatchType) -> Self {
+		self.attr = attributes;
+		self.attr_mt = mt;
+		self
+	}
+
+	// TODO: Add method for single attribute, see SateSet comment
+
+	/// Insert a slice of `Role`s
+	pub fn roles(mut self, roles: &[Role], mt: MatchType) -> Self {
+		self.roles = roles.into();
+		self.roles_mt = mt;
+		self
+	}
+
+	// TODO: Add method for single Role, see SateSet comment
+
+	/// Insert a slice of `Interface`s
+	pub fn interfaces(mut self, interfaces: &[Interface], mt: MatchType) -> Self {
+		self.ifaces = interfaces.into();
+		self.ifaces_mt = mt;
+		self
+	}
+
+	/// Sets the inversion of the `MatchRule`, defaults to `false`, no inversion.
+	pub fn invert(mut self, invert: bool) -> Self {
+		self.invert = invert;
+		self
+	}
+
+	pub fn build(self) -> MatchRule {
+		Matchrule {
+			states: self.states,
+			states_mt: self.states_mt,
+			attr: self.attr,
+			attr_mt: self.attr_mt,
+			roles: self.roles,
+			roles_mt: self.roles_mt,
+			ifaces: self.ifaces,
+			ifaces_mt: self.ifaces_mt,
+			invert: self.invert,
+			phantom: (),
+		}
+	}
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[repr(u32)]
