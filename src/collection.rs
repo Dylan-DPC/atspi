@@ -50,13 +50,22 @@ pub enum TreeTraversalType {
 	LastDefined,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
-#[repr(i32)]
+/// Enumerator used by `MatchRule` to define how to specify `Accessible`s.
+#[non_exhaustive]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[repr(u32)]
 pub enum MatchType {
+	///  Indicates an error condition or uninitialized value.
 	Invalid,
+	///  Match if all criteria are met.
+	#[default]
 	All,
+	/// Match if any one of the criteria is met.
 	Any,
+	/// Match if none of the criteria are met.
 	NA,
+	/// Same as `All` if the criteria are non-empty,
+	/// for empty criteria, this rule requires an empty set to be returned.
 	Empty,
 	LastDefined,
 }
