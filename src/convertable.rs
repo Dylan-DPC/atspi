@@ -1,4 +1,5 @@
 use crate::{
+	AtspiError,
 	accessible::{Accessible, AccessibleBlocking, AccessibleProxy, AccessibleProxyBlocking},
 	action::{Action, ActionBlocking, ActionProxy, ActionProxyBlocking},
 	application::{Application, ApplicationBlocking, ApplicationProxy, ApplicationProxyBlocking},
@@ -210,7 +211,7 @@ async fn convert_to_new_type<
 	U: Deref<Target = Proxy<'a>> + ProxyDefault + AtspiProxy,
 >(
 	from: &U,
-) -> zbus::Result<T> {
+) -> Result<T, AtspiError> {
 	// first thing is first, we need to creat an accessible to query the interfaces.
 	let accessible = AccessibleProxy::builder(from.connection())
 		.destination(from.destination())?
@@ -224,18 +225,18 @@ async fn convert_to_new_type<
 		.await?
 		.contains(<U as AtspiProxy>::INTERFACE)
 	{
-		return Err(Error::InterfaceNotFound);
+		return Err(AtspiError::Zbus(Error::InterfaceNotFound));
 	}
 	// otherwise, make a new Proxy with the related type.
 	let path = from.path().to_owned();
 	let dest = from.destination().to_owned();
-	ProxyBuilder::<'b, T>::new_bare(from.connection())
+	Ok(ProxyBuilder::<'b, T>::new_bare(from.connection())
 		.interface(<T as ProxyDefault>::INTERFACE)?
 		.destination(dest)?
 		.cache_properties(CacheProperties::No)
 		.path(path)?
 		.build()
-		.await
+		.await?)
 }
 
 #[inline]
@@ -246,7 +247,7 @@ fn convert_to_new_type_blocking<
 	U: Deref<Target = ProxyBlocking<'a>> + ProxyDefault + AtspiProxy,
 >(
 	from: &U,
-) -> zbus::Result<T> {
+) -> Result<T, AtspiError> {
 	// first thing is first, we need to creat an accessible to query the interfaces.
 	let accessible = AccessibleProxyBlocking::builder(from.connection())
 		.destination(from.destination())?
@@ -260,17 +261,17 @@ fn convert_to_new_type_blocking<
 	// otherwise, make a new Proxy with the related type.
 	let path = from.path().to_owned();
 	let dest = from.destination().to_owned();
-	ProxyBuilderBlocking::<'b, T>::new_bare(from.connection())
+	Ok(ProxyBuilderBlocking::<'b, T>::new_bare(from.connection())
 		.interface(<T as ProxyDefault>::INTERFACE)?
 		.destination(dest)?
 		.cache_properties(CacheProperties::No)
 		.path(path)?
-		.build()
+		.build()?)
 }
 
 #[async_trait]
 impl<'a, T: Deref<Target = Proxy<'a>> + ProxyDefault + AtspiProxy + Sync> Convertable for T {
-	type Error = zbus::Error;
+	type Error = AtspiError;
 	type Accessible = AccessibleProxy<'a>;
 	type Action = ActionProxy<'a>;
 	type Application = ApplicationProxy<'a>;
@@ -287,49 +288,49 @@ impl<'a, T: Deref<Target = Proxy<'a>> + ProxyDefault + AtspiProxy + Sync> Conver
 	type EditableText = EditableTextProxy<'a>;
 	type Value = ValueProxy<'a>;
 	/* no guard due to assumption it is always possible */
-	async fn to_accessible(&self) -> zbus::Result<Self::Accessible> {
+	async fn to_accessible(&self) -> Result<Self::Accessible, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_action(&self) -> zbus::Result<Self::Action> {
+	async fn to_action(&self) -> Result<Self::Action, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_application(&self) -> zbus::Result<Self::Application> {
+	async fn to_application(&self) -> Result<Self::Application, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_collection(&self) -> zbus::Result<Self::Collection> {
+	async fn to_collection(&self) -> Result<Self::Collection, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_component(&self) -> zbus::Result<Self::Component> {
+	async fn to_component(&self) -> Result<Self::Component, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_document(&self) -> zbus::Result<Self::Document> {
+	async fn to_document(&self) -> Result<Self::Document, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_hypertext(&self) -> zbus::Result<Self::Hypertext> {
+	async fn to_hypertext(&self) -> Result<Self::Hypertext, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_hyperlink(&self) -> zbus::Result<Self::Hyperlink> {
+	async fn to_hyperlink(&self) -> Result<Self::Hyperlink, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_image(&self) -> zbus::Result<Self::Image> {
+	async fn to_image(&self) -> Result<Self::Image, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_selection(&self) -> zbus::Result<Self::Selection> {
+	async fn to_selection(&self) -> Result<Self::Selection, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_table(&self) -> zbus::Result<Self::Table> {
+	async fn to_table(&self) -> Result<Self::Table, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_table_cell(&self) -> zbus::Result<Self::TableCell> {
+	async fn to_table_cell(&self) -> Result<Self::TableCell, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_text(&self) -> zbus::Result<Self::Text> {
+	async fn to_text(&self) -> Result<Self::Text, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_editable_text(&self) -> zbus::Result<Self::EditableText> {
+	async fn to_editable_text(&self) -> Result<Self::EditableText, Self::Error> {
 		convert_to_new_type(self).await
 	}
-	async fn to_value(&self) -> zbus::Result<Self::Value> {
+	async fn to_value(&self) -> Result<Self::Value, Self::Error> {
 		convert_to_new_type(self).await
 	}
 }
@@ -337,7 +338,7 @@ impl<'a, T: Deref<Target = Proxy<'a>> + ProxyDefault + AtspiProxy + Sync> Conver
 impl<'a, T: Deref<Target = ProxyBlocking<'a>> + ProxyDefault + AtspiProxy> ConvertableBlocking
 	for T
 {
-	type Error = zbus::Error;
+	type Error = AtspiError;
 	type Accessible = AccessibleProxyBlocking<'a>;
 	type Action = ActionProxyBlocking<'a>;
 	type Application = ApplicationProxyBlocking<'a>;
@@ -354,49 +355,49 @@ impl<'a, T: Deref<Target = ProxyBlocking<'a>> + ProxyDefault + AtspiProxy> Conve
 	type EditableText = EditableTextProxyBlocking<'a>;
 	type Value = ValueProxyBlocking<'a>;
 	/* no guard due to assumption it is always possible */
-	fn to_accessible(&self) -> zbus::Result<Self::Accessible> {
+	fn to_accessible(&self) -> Result<Self::Accessible, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_action(&self) -> zbus::Result<Self::Action> {
+	fn to_action(&self) -> Result<Self::Action, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_application(&self) -> zbus::Result<Self::Application> {
+	fn to_application(&self) -> Result<Self::Application, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_collection(&self) -> zbus::Result<Self::Collection> {
+	fn to_collection(&self) -> Result<Self::Collection, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_component(&self) -> zbus::Result<Self::Component> {
+	fn to_component(&self) -> Result<Self::Component, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_document(&self) -> zbus::Result<Self::Document> {
+	fn to_document(&self) -> Result<Self::Document, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_hypertext(&self) -> zbus::Result<Self::Hypertext> {
+	fn to_hypertext(&self) -> Result<Self::Hypertext, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_hyperlink(&self) -> zbus::Result<Self::Hyperlink> {
+	fn to_hyperlink(&self) -> Result<Self::Hyperlink, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_image(&self) -> zbus::Result<Self::Image> {
+	fn to_image(&self) -> Result<Self::Image, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_selection(&self) -> zbus::Result<Self::Selection> {
+	fn to_selection(&self) -> Result<Self::Selection, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_table(&self) -> zbus::Result<Self::Table> {
+	fn to_table(&self) -> Result<Self::Table, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_table_cell(&self) -> zbus::Result<Self::TableCell> {
+	fn to_table_cell(&self) -> Result<Self::TableCell, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_text(&self) -> zbus::Result<Self::Text> {
+	fn to_text(&self) -> Result<Self::Text, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_editable_text(&self) -> zbus::Result<Self::EditableText> {
+	fn to_editable_text(&self) -> Result<Self::EditableText, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
-	fn to_value(&self) -> zbus::Result<Self::Value> {
+	fn to_value(&self) -> Result<Self::Value, Self::Error> {
 		convert_to_new_type_blocking(self)
 	}
 }
