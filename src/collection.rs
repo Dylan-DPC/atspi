@@ -12,7 +12,9 @@
 #![allow(clippy::too_many_arguments)]
 // this allow zbus to change the number of parameters in a function without setting off clippy
 
-use crate::atspi_proxy;
+use std::{collections::HashMap, marker::PhantomData};
+
+use crate::{accessible::Role, atspi_proxy, Interface, InterfaceSet, StateSet};
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::Type;
 
@@ -30,10 +32,11 @@ pub struct MatchRule {
 	pub invert: bool,
 	// Private phantom, gets compiled away.
 	// Here to ensure the builder is the only route to obtain a `MatchRule`
+	#[serde(skip)]
 	phantom: std::marker::PhantomData<()>,
 }
 
-// TODO: Can we tie this to the XML defined signature directly?
+//  TODO: Can we (easily) tie this to the XML defined signature directly?
 #[test]
 fn match_rule_derived_dbus_signature_corresponds_xml_signature() {
 	let signature = MatchRule::signature();
@@ -56,7 +59,7 @@ pub struct MatchRuleBuilder {
 }
 
 impl MatchRule {
-	fn builder() -> MatchRuleBuilder {
+	pub fn builder() -> MatchRuleBuilder {
 		MatchRuleBuilder::default()
 	}
 }
@@ -104,7 +107,7 @@ impl MatchRuleBuilder {
 	}
 
 	pub fn build(self) -> MatchRule {
-		Matchrule {
+		MatchRule {
 			states: self.states,
 			states_mt: self.states_mt,
 			attr: self.attr,
@@ -114,11 +117,12 @@ impl MatchRuleBuilder {
 			ifaces: self.ifaces,
 			ifaces_mt: self.ifaces_mt,
 			invert: self.invert,
-			phantom: (),
+			phantom: PhantomData,
 		}
 	}
 }
 
+#[non_exhaustive]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[repr(u32)]
 pub enum SortOrder {
@@ -129,7 +133,6 @@ pub enum SortOrder {
 	ReverseCanonical,
 	ReverseFlow,
 	ReverseTab,
-	LastDefined,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -137,14 +140,14 @@ pub enum SortOrder {
 pub enum TreeTraversalType {
 	RestrictChildren,
 	RestrictSibling,
-	Inorder,
-	LastDefined,
+	InOrder,
 }
 
-/// Enumerator used by `MatchRule` to define how to specify `Accessible`s.
+/// Used by `MatchRule` to define how to specify `Accessible`s.
+// according to the XML this is has a signed representation.
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
-#[repr(u32)]
+#[repr(i32)]
 pub enum MatchType {
 	///  Indicates an error condition or uninitialized value.
 	Invalid,
@@ -158,7 +161,6 @@ pub enum MatchType {
 	/// Same as `All` if the criteria are non-empty,
 	/// for empty criteria, this rule requires an empty set to be returned.
 	Empty,
-	LastDefined,
 }
 
 #[atspi_proxy(interface = "org.a11y.atspi.Collection", assume_defaults = true)]
@@ -166,21 +168,10 @@ trait Collection {
 	/// GetActiveDescendant method
 	fn get_active_descendant(&self) -> zbus::Result<(String, zbus::zvariant::OwnedObjectPath)>;
 
-	/* ROLE fields:
-	  &[i32]: AtspiStateSet,
-	  i32: AtspiCollectionMatchType,
-	  HashMap<&str, &str>: attributes,
-	  i32: AtspiCollectionMatchType (attribute match type),
-	  &[i32]: roles,
-	  i32: AtspiCollectionMatchType (role match type),
-	  &[&str]: interfaces,
-	  i32: AtspiCollectionMatchType (interface match type),
-	  bool: invert
-	*/
 	/// GetMatches method
 	fn get_matches(
 		&self,
-		rule: &MatchArgs<'_>,
+		rule: &MatchRule,
 		sortby: SortOrder,
 		count: i32,
 		traverse: bool,
@@ -190,7 +181,7 @@ trait Collection {
 	fn get_matches_from(
 		&self,
 		current_object: &zbus::zvariant::ObjectPath<'_>,
-		rule: &MatchArgs<'_>,
+		rule: &MatchRule,
 		sortby: SortOrder,
 		tree: TreeTraversalType,
 		count: i32,
@@ -201,7 +192,7 @@ trait Collection {
 	fn get_matches_to(
 		&self,
 		current_object: &zbus::zvariant::ObjectPath<'_>,
-		rule: &MatchArgs<'_>,
+		rule: &MatchRule,
 		sortby: SortOrder,
 		tree: TreeTraversalType,
 		limit_scope: bool,

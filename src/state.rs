@@ -220,21 +220,21 @@ pub enum State {
 }
 
 #[allow(clippy::module_name_repetitions)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Default, Debug, PartialEq, Eq, Hash)]
 /// The bitflag representation of all states an object may have.
 pub struct StateSet(BitFlags<State>);
 
 impl StateSet {
 	/// Create a new `StateSet`.
 	///
-	///## Example
-	///```Rust
+	/// # Example
+	/// ```Rust
 	///     let states = State::Focusable | State::Sensitive | State::Active;
 	///     let set = StateSet::new(states);
 	///
 	///     assert!(set.contains(State::Active));
 	///     assert!(!set.contains(State::Busy));
-	/// ```
+	///  ```
 	pub fn new<B: Into<BitFlags<State>>>(value: B) -> Self {
 		Self(value.into())
 	}

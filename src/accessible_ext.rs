@@ -1,78 +1,70 @@
+use crate::AtspiError;
 use crate::{
 	accessible::{
 		Accessible, AccessibleBlocking, AccessibleProxy, AccessibleProxyBlocking, RelationType,
 		Role,
 	},
-	collection::MatchType,
+	collection::MatchRule,
 	convertable::{Convertable, ConvertableBlocking},
 	hyperlink::Hyperlink,
+	state::StateSet,
 	text::{Text, TextBlocking},
-	InterfaceSet,
 };
 use async_trait::async_trait;
 use std::collections::HashMap;
 
-#[allow(dead_code)]
-#[derive(Debug, Clone)]
-pub struct MatcherArgs {
-	roles: Vec<Role>,
-	role_mt: MatchType,
-	attr: HashMap<String, String>,
-	attr_mt: MatchType,
-	ifaces: InterfaceSet,
-	ifaces_mt: MatchType,
-}
-
 #[async_trait]
 pub trait AccessibleExt {
 	type Error: std::error::Error;
-	async fn get_parent_ext<'a>(&self) -> Result<Self, Self::Error>
+
+	async fn get_indexed_children<'a>(&self) -> Result<Vec<(i32, Self)>, Self::Error>
 	where
 		Self: Sized;
-	async fn get_children_ext<'a>(&self) -> Result<Vec<Self>, Self::Error>
+
+	async fn get_indexed_siblings<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized;
-	async fn get_siblings<'a>(&self) -> Result<Vec<Self>, Self::Error>
-	where
-		Self: Sized;
-	async fn get_children_indexes<'a>(&self) -> Result<Vec<i32>, Self::Error>;
+
 	async fn get_siblings_before<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized;
+
 	async fn get_siblings_after<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized;
-	async fn get_children_caret<'a>(&self, after: bool) -> Result<Vec<Self>, Self::Error>
+
+	async fn get_hyperlinks_adjacent_to_caret<'a>(&self) -> Result<[Vec<Self>; 3], Self::Error>
 	where
 		Self: Sized;
-	/* TODO: not sure where these should go since it requires both Text as a self interface and
-	 * Hyperlink as children interfaces. */
-	async fn get_next<'a>(
+
+	async fn get_next_hyperlink<'a>(
 		&self,
-		matcher_args: &MatcherArgs,
+		rule: &MatchRule,
 		backward: bool,
+		with_unknown: bool,
 	) -> Result<Option<Self>, Self::Error>
 	where
 		Self: Sized;
+
 	async fn get_relation_set_ext<'a>(
 		&self,
 	) -> Result<HashMap<RelationType, Vec<Self>>, Self::Error>
 	where
 		Self: Sized;
+
 	async fn find_inner<'a>(
 		&self,
-		after_or_before: i32,
-		matcher_args: &MatcherArgs,
+		before_or_after: i32,
+		rule: &MatchRule,
 		backward: bool,
 		recur: bool,
-	) -> Result<Option<Self>, <Self as AccessibleExt>::Error>
+	) -> Result<Option<Self>, Self::Error>
 	where
 		Self: Sized;
-	async fn match_(
-		&self,
-		matcher_args: &MatcherArgs,
-	) -> Result<bool, <Self as AccessibleExt>::Error>;
+
+	async fn matches_rule(&self, rule: &MatchRule) -> Result<bool, Self::Error>;
 }
+
 // TODO: implement AccessibleExt
 pub trait AccessibleBlockingExt {}
 
@@ -102,7 +94,7 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 	type Error = crate::AtspiError;
 
 	/// Retrieves children with their respective indexes in parent, the current `Accessible`.
-	async fn get_indexed_children<'a>(&self) -> Result<Vec<(i32, Self)>, Self::Error> {
+	async fn get_indexed_children<'a>(&self) -> Result<Vec<(i32, Self)>, AtspiError> {
 		let children = self.get_children().await?;
 		let mut indexed: Vec<(i32, Self)> = Vec::with_capacity(children.len());
 		for child in children {
@@ -111,81 +103,58 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 		}
 		Ok(indexed)
 	}
-	async fn get_children_ext<'a>(&self) -> Result<Vec<Self>, Self::Error>
-	where
-		Self: Sized,
-	{
-		Ok(self.get_children().await?)
-		/*
-		let children_parts = self.get_children().await?;
-		let mut children = Vec::new();
-		for child_parts in children_parts {
-			let acc = AccessibleProxy::builder(self.connection())
-				.destination(child_parts.0)?
-				.cache_properties(CacheProperties::No)
-				.path(child_parts.1)?
-				.build()
-				.await?;
-			children.push(acc);
-		}
-		Ok(children)
-				*/
-	}
-	async fn get_siblings<'a>(&self) -> Result<Vec<Self>, Self::Error>
+
+	/// Retrieves all siblings with their respective indexes in the shared parent, the current `Accessible`
+	async fn get_indexed_siblings<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized,
 	{
 		let parent = self.parent().await?;
-		let index = self.get_index_in_parent().await?.try_into()?;
-		// Clippy false positive: Standard pattern for excluding index item from list.
-		#[allow(clippy::if_not_else)]
-		let children: Vec<Self> = parent
-			.get_children()
-			.await?
-			.into_iter()
-			.enumerate()
-			.filter_map(|(i, a)| if i != index { Some(a) } else { None })
-			.collect();
-		Ok(children)
+		let mut siblings = parent.get_indexed_children().await?;
+		let index = self.get_index_in_parent().await?;
+		siblings.retain(|(&idx, _)| idx != index);
+		Ok(siblings)
 	}
+
+	/// Retrieve sibling objects in parent which index is smaller than this `Accessible`
+	///
+	/// # Efficiency note:
+	/// This method is provided for convenience.
+	///
+	/// This function calls `get_indexed_siblings()` and discards unwanted siblings,
+	/// If  you have a use for all siblings, it may be more efficient to keep those around,
+	/// and call `get_indexed_siblings()` instead.
 	async fn get_siblings_before<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized,
 	{
-		let parent = self.parent().await?;
-		let index = self.get_index_in_parent().await?.try_into()?;
-		let children: Vec<Self> = parent
-			.get_children_ext()
-			.await?
-			.into_iter()
-			.enumerate()
-			.filter_map(|(i, a)| if i < index { Some(a) } else { None })
-			.collect();
-		Ok(children)
+		let index = self.get_index_in_parent().await?;
+		let siblings = self.get_indexed_siblings().await?;
+		siblings.retain(|(idx, _)| idx < index);
+		Ok(siblings)
 	}
+
+	/// Retrieve sibling objects in parent which index is smaller than this `Accessible`
+	///
+	/// # Efficiency note:
+	/// This method is provided for convenience.
+	///
+	/// This function calls `get_indexed_siblings()` and discards unwanted siblings,
+	/// If  you have a use for all siblings, it may be more efficient to keep those around,
+	/// and call `get_indexed_siblings()` instead.
 	async fn get_siblings_after<'a>(&self) -> Result<Vec<Self>, Self::Error>
 	where
 		Self: Sized,
 	{
-		let parent = self.parent().await?;
-		let index = self.get_index_in_parent().await?.try_into()?;
-		let children: Vec<Self> = parent
-			.get_children_ext()
-			.await?
-			.into_iter()
-			.enumerate()
-			.filter_map(|(i, a)| if i > index { Some(a) } else { None })
-			.collect();
-		Ok(children)
+		let index = self.get_index_in_parent().await?;
+		let siblings = self.get_indexed_siblings().await?;
+		siblings.retain(|(idx, _)| idx > index);
+		Ok(siblings)
 	}
 
 	/// Return 'hyperlink children' before and after the caret position, if hyperlink child objects exist.
 	///
 	/// If hyperlink objects'  'IndexAtStart' property does not yield a value, then these children are found in a third vector.
-	///
-	/// # Errors
-	/// This function assumes all children of a text-object are hyperlinks.
-	/// If that assumption proves false it yields an Error.
 	async fn get_hyperlinks_adjacent_to_caret<'a>(&self) -> Result<[Vec<Self>; 3], Self::Error>
 	where
 		Self: Sized,
@@ -194,52 +163,62 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 		let text_iface = self.to_text().await?;
 		let caret_pos = text_iface.caret_offset().await?;
 
+		let text_children = self.get_children.await?;
+		let length = text_children.len();
+
 		// Collect the text-object's children.
 		// Collect in either of three categories:
-		let mut lhs = Vec::new();
-		let mut rhs = Vec::new();
-		let mut unknown = Vec::new();
+		let mut lhs = Vec::with_capacity(length);
+		let mut rhs = Vec::with_capacity(length);
+		let mut unknown = Vec::with_capacity(length);
 
-		// This function assumes text-object children are hyperlinks.
-		// If they are not, we would like to know.
-		let text_children = self.get_children_ext().await?;
 		for child in text_children {
-			// If any of the children is not a hyperlink, we bail.
-			let hyperlink = child.to_hyperlink().await?;
+			// Presumably all `Text` children are `Hyperlink`'s..
+			let Ok(hyperlink) = child.to_hyperlink().await else { continue };
 			match hyperlink.start_index().await {
 				Ok(start_idx) if start_idx <= caret_pos => lhs.push(child),
 				Ok(start_idx) if start_idx >= caret_pos => rhs.push(child),
 				_ => unknown.push(child),
 			}
 		}
-
 		Ok([lhs, rhs, unknown])
 	}
-	async fn get_next<'a>(
+
+	// Should this be replaced with a hyperlink Stream?
+	async fn get_next_hyperlink<'a>(
 		&self,
-		matcher_args: &MatcherArgs,
+		rule: &MatchRule,
 		backward: bool,
+		with_unknown: bool,
 	) -> Result<Option<Self>, Self::Error>
 	where
 		Self: Sized,
 	{
-		// TODO if backwards, check here
-		let caret_children = self.get_children_caret(backward).await?;
-		for child in caret_children {
-			if child.match_(matcher_args).await? {
-				return Ok(Some(child));
-			} else if let Some(found_sub) =
-				child.find_inner(0, matcher_args, backward, true).await?
-			{
+		let [lhs, rhs, unknown] = self.get_hyperlinks_adjacent_to_caret().await?;
+		let hyperlinks = if backward { lhs.into_iter() } else { rhs.into_iter() };
+
+		if with_unknown {
+			let hyperlinks = hyperlinks.chain(unknown.into_iter());
+		}
+
+		// For each link in the list of caret adjacent hyperlink-children,
+		// if the link matches the provided rule, return it
+
+		for link in hyperlinks {
+			if link.match_(rule).await? {
+				return Ok(Some(link));
+			} else if let Some(found_sub) = link.find_inner(0, rule, backward, true).await? {
 				return Ok(Some(found_sub));
 			}
 		}
+
+		// No hyperlink matching 'rule' was found
 		let mut last_parent_index = self.get_index_in_parent().await?;
-		if let Ok(mut parent) = self.get_parent_ext().await {
+
+		if let Ok(mut parent) = self.get_parent().await {
 			while parent.get_role().await? != Role::InternalFrame {
-				let found_inner_child = parent
-					.find_inner(last_parent_index, matcher_args, backward, false)
-					.await?;
+				let found_inner_child =
+					parent.find_inner(last_parent_index, rule, backward, false).await?;
 				if found_inner_child.is_some() {
 					return Ok(found_inner_child);
 				}
@@ -249,6 +228,7 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 		}
 		Ok(None)
 	}
+
 	async fn get_relation_set_ext<'a>(
 		&self,
 	) -> Result<HashMap<RelationType, Vec<Self>>, Self::Error>
@@ -256,23 +236,18 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 		Self: Sized,
 	{
 		let raw_relations = self.get_relation_set().await?;
-		let mut relations = HashMap::new();
-		for relation in raw_relations {
-			let mut related_vec = Vec::new();
-			for related in relation.1 {
-				related_vec.push(related);
-			}
-			relations.insert(relation.0, related_vec);
-		}
-		Ok(relations)
+		Ok(HashMap::from_iter(raw_relations))
 	}
+
+	/// Find a descendant by matching against `MatcherArgs`.
+	/// before_or_after
 	async fn find_inner<'a>(
 		&self,
 		before_or_after: i32,
-		matcher_args: &MatcherArgs,
+		rule: &MatchRule,
 		backward: bool,
 		recur: bool,
-	) -> Result<Option<Self>, <Self as AccessibleExt>::Error>
+	) -> Result<Option<Self>, Self::Error>
 	where
 		Self: Sized,
 	{
@@ -283,6 +258,7 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 		} else {
 			self.get_children_ext().await?
 		};
+
 		for child in children {
 			let child_index = child.get_index_in_parent().await?;
 			if !recur
@@ -291,36 +267,30 @@ impl<T: Accessible + Convertable> AccessibleExt for T {
 			{
 				continue;
 			}
-			if child.match_(matcher_args).await? {
+
+			// If the child's role corresponds with the first and sole role of MatcherArgs
+			if child.match_(rule).await? {
 				return Ok(Some(child));
 			}
+
 			/* 0 here is ignored because we are recursive; see the line starting with if !recur */
-			if let Some(found_descendant) =
-				child.find_inner(0, matcher_args, backward, true).await?
-			{
+			if let Some(found_descendant) = child.find_inner(0, rule, backward, true).await? {
 				return Ok(Some(found_descendant));
 			}
 		}
 		Ok(None)
 	}
-	// TODO: make match more broad, allow use of other parameters; also, support multiple roles, since right now, multiple will just exit immediately with false
-	async fn match_(
-		&self,
-		matcher_args: &MatcherArgs,
-	) -> Result<bool, <Self as AccessibleExt>::Error> {
-		let roles = &matcher_args.roles;
-		if roles.len() != 1 {
-			return Ok(false);
-		}
-		// our unwrap is protected from panicing with the above check
-		Ok(self.get_role().await? == *roles.get(0).unwrap())
+
+	async fn matches_rule(&self, rule: &MatchRule) -> Result<bool, Self::Error> {
+		let mut result = false;
+		if !(*rule).states.is_empty() {}
+
+		// Invert the result if rule inversion was selected:
+		return if rule.invert == &true { Ok(!result) } else { Ok(result) };
 	}
 }
 
-impl<T: AccessibleBlocking + ConvertableBlocking + AccessibleBlockingExtError> AccessibleBlockingExt
-	for T
-{
-}
+impl<T: AccessibleBlocking + ConvertableBlocking> AccessibleBlockingExt for T {}
 
 assert_impl_all!(AccessibleProxy: Accessible, AccessibleExt);
 assert_impl_all!(AccessibleProxyBlocking: AccessibleBlocking, AccessibleBlockingExt);

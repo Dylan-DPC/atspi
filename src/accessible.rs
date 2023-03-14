@@ -21,7 +21,7 @@ use zbus::zvariant::Type;
 /// For example: `<button>`, `<input>`, `<form>` or `<h4>`.
 /// Non-semantic elements like `<span>`, `<div>` and `<b>` will not be represented here, and this information is not passed through via the atspi library.
 /// TODO: add examples for GTK/Qt libraries in addition to HTML examples.
-#[repr(u32)]
+#[repr(i32)]
 pub enum Role {
 	/// An invalid role used for either an invalid deserialization, or when trying to match for any possible role. TODO: confirm
 	Invalid,
@@ -289,7 +289,7 @@ pub enum RelationType {
 	ErrorFor,
 }
 
-/// A pair of (`sender`, `object path with id`) which constitutes the fundemental parts of an Accessible object in `atspi`.
+/// A pair of (`sender`,`object path with id`) which constitutes the fundamental parts of an Accessible object in `atspi`.
 /// NOTE: If you update the name of this type alias, also update the constant in `atspi_macros::OBJECT_PAIR_NAME`.
 pub type ObjectPair = (String, AccessibleId);
 
@@ -365,6 +365,7 @@ impl PartialEq for AccessibleProxy<'_> {
 		self.path() == other.path()
 	}
 }
+
 impl Eq for AccessibleProxy<'_> {}
 impl HasAccessibleId for AccessibleProxy<'_> {
 	type Error = zbus::zvariant::Error;

@@ -45,6 +45,12 @@ pub enum Interface {
 	Value,
 }
 
+impl Interface {
+	pub fn bits(&self) -> u32 {
+		*self as u32
+	}
+}
+
 impl<'de> Deserialize<'de> for Interface {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
@@ -155,6 +161,12 @@ impl InterfaceSet {
 	}
 }
 
+impl Default for InterfaceSet {
+	fn default() -> Self {
+		Self::empty()
+	}
+}
+
 impl<'de> Deserialize<'de> for InterfaceSet {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
@@ -203,6 +215,15 @@ impl Type for InterfaceSet {
 impl From<Interface> for InterfaceSet {
 	fn from(value: Interface) -> Self {
 		Self(value.into())
+	}
+}
+
+impl From<&[Interface]> for InterfaceSet {
+	fn from(interfaces: &[Interface]) -> Self {
+		interfaces.iter().fold(InterfaceSet::default(), |mut set, iface| {
+			set.insert(*iface);
+			set
+		})
 	}
 }
 
@@ -331,8 +352,7 @@ impl std::fmt::Display for Interface {
 			Interface::Registry => "org.a11y.atspi.Registry",
 			Interface::DeviceEventController => "org.a11y.atspi.DeviceEventController",
 			Interface::DeviceEventListener => "org.a11y.atspi.DeviceEventListener",
-		}
-		.to_string();
+		};
 		write!(f, "{interface_string}")
 	}
 }
