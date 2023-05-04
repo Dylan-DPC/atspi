@@ -12,7 +12,7 @@ pub mod object {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -141,12 +141,11 @@ pub mod object {
 	/// }
 	/// ```
 	// IgnoreBlock stop
-	#[derive(Debug, PartialEq, Clone)]
+	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct PropertyChangeEvent {
 		pub item: crate::events::Accessible,
 		pub property: String,
-		pub value: zbus::zvariant::OwnedValue,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+		pub value: String,
 	}
 
 	// IgnoreBlock start
@@ -184,7 +183,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct BoundsChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -222,7 +220,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LinkSelectedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -262,7 +259,6 @@ pub mod object {
 		pub item: crate::events::Accessible,
 		pub state: String,
 		pub enabled: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -297,13 +293,12 @@ pub mod object {
 	/// }
 	/// ```
 	// IgnoreBlock stop
-	#[derive(Debug, PartialEq, Clone)]
+	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ChildrenChangedEvent {
 		pub item: crate::events::Accessible,
 		pub operation: String,
 		pub index_in_parent: i32,
-		pub child: zbus::zvariant::OwnedValue,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+		pub child: Accessible,
 	}
 
 	// IgnoreBlock start
@@ -341,7 +336,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct VisibleDataChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -379,7 +373,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct SelectionChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -417,7 +410,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ModelChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -452,11 +444,10 @@ pub mod object {
 	/// }
 	/// ```
 	// IgnoreBlock stop
-	#[derive(Debug, PartialEq, Clone)]
+	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ActiveDescendantChangedEvent {
 		pub item: crate::events::Accessible,
-		pub child: zbus::zvariant::OwnedValue,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+		pub child: String,
 	}
 
 	// IgnoreBlock start
@@ -495,7 +486,6 @@ pub mod object {
 	pub struct AnnouncementEvent {
 		pub item: crate::events::Accessible,
 		pub text: String,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -533,7 +523,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct AttributesChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -571,7 +560,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RowInsertedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -609,7 +597,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RowReorderedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -647,7 +634,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RowDeletedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -685,7 +671,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ColumnInsertedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -723,7 +708,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ColumnReorderedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -761,7 +745,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ColumnDeletedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -799,7 +782,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct TextBoundsChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -837,7 +819,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct TextSelectionChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -872,14 +853,13 @@ pub mod object {
 	/// }
 	/// ```
 	// IgnoreBlock stop
-	#[derive(Debug, PartialEq, Clone)]
+	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct TextChangedEvent {
 		pub item: crate::events::Accessible,
 		pub detail: String,
 		pub start_pos: i32,
 		pub length: i32,
-		pub text: zbus::zvariant::OwnedValue,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+		pub text: String,
 	}
 
 	// IgnoreBlock start
@@ -917,7 +897,6 @@ pub mod object {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct TextAttributesChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -956,7 +935,6 @@ pub mod object {
 	pub struct TextCaretMovedEvent {
 		pub item: crate::events::Accessible,
 		pub position: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for PropertyChangeEvent {
@@ -968,8 +946,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, property: body.kind, value: body.any_data, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, property: body.kind, value: body.any_data.try_into()? })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1004,8 +982,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1040,8 +1018,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1076,8 +1054,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, state: body.kind, enabled: body.detail1, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, state: body.kind, enabled: body.detail1 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1112,14 +1090,13 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self {
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self {
 				item,
 				operation: body.kind,
 				index_in_parent: body.detail1,
-				child: body.any_data,
-				properties: body.properties,
-			}
+				child: body.any_data.try_into()?,
+			})
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1154,8 +1131,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1190,8 +1167,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1226,8 +1203,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1261,8 +1238,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, child: body.any_data, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, child: body.any_data.try_into()? })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1297,8 +1274,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, text: body.kind, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, text: body.kind })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1333,8 +1310,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1369,8 +1346,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1405,8 +1382,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1441,8 +1418,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1477,8 +1454,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1513,8 +1490,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1549,8 +1526,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1585,8 +1562,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1621,8 +1598,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1657,15 +1634,14 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self {
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self {
 				item,
 				detail: body.kind,
 				start_pos: body.detail1,
 				length: body.detail2,
-				text: body.any_data,
-				properties: body.properties,
-			}
+				text: body.any_data.try_into()?,
+			})
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1700,8 +1676,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1736,8 +1712,8 @@ pub mod object {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, position: body.detail1, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, position: body.detail1 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -1759,52 +1735,6 @@ pub mod object {
 				Ok(inner_event)
 			} else {
 				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-
-	impl Default for PropertyChangeEvent {
-		fn default() -> Self {
-			PropertyChangeEvent {
-				item: crate::events::Accessible::default(),
-				property: String::default(),
-				value: zbus::zvariant::Value::U8(0).into(),
-				properties: std::collections::HashMap::new(),
-			}
-		}
-	}
-
-	impl Default for ChildrenChangedEvent {
-		fn default() -> Self {
-			ChildrenChangedEvent {
-				item: crate::events::Accessible::default(),
-				operation: String::default(),
-				index_in_parent: i32::default(),
-				child: zbus::zvariant::Value::U8(0).into(),
-				properties: std::collections::HashMap::new(),
-			}
-		}
-	}
-
-	impl Default for ActiveDescendantChangedEvent {
-		fn default() -> Self {
-			ActiveDescendantChangedEvent {
-				item: crate::events::Accessible::default(),
-				child: zbus::zvariant::Value::U8(0).into(),
-				properties: std::collections::HashMap::new(),
-			}
-		}
-	}
-
-	impl Default for TextChangedEvent {
-		fn default() -> Self {
-			TextChangedEvent {
-				item: crate::events::Accessible::default(),
-				detail: String::default(),
-				start_pos: i32::default(),
-				length: i32::default(),
-				text: zbus::zvariant::Value::U8(0).into(),
-				properties: std::collections::HashMap::new(),
 			}
 		}
 	}
@@ -1865,11 +1795,11 @@ pub mod object {
 	impl From<PropertyChangeEvent> for EventBodyOwned {
 		fn from(event: PropertyChangeEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.property,
 				detail1: i32::default(),
 				detail2: i32::default(),
-				any_data: event.value,
-				properties: event.properties,
+				any_data: zvariant::Value::from(event.value).into(),
 			}
 		}
 	}
@@ -1887,14 +1817,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(BoundsChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(BoundsChangedEvent);
 	impl From<BoundsChangedEvent> for EventBodyOwned {
-		fn from(event: BoundsChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: BoundsChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -1911,14 +1835,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(LinkSelectedEvent);
 	crate::events::macros::impl_from_dbus_message!(LinkSelectedEvent);
 	impl From<LinkSelectedEvent> for EventBodyOwned {
-		fn from(event: LinkSelectedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LinkSelectedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -1937,11 +1855,11 @@ pub mod object {
 	impl From<StateChangedEvent> for EventBodyOwned {
 		fn from(event: StateChangedEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.state,
 				detail1: event.enabled,
 				detail2: i32::default(),
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -1961,11 +1879,11 @@ pub mod object {
 	impl From<ChildrenChangedEvent> for EventBodyOwned {
 		fn from(event: ChildrenChangedEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.operation,
 				detail1: event.index_in_parent,
 				detail2: i32::default(),
-				any_data: event.child,
-				properties: event.properties,
+				any_data: zvariant::Value::from(event.child).into(),
 			}
 		}
 	}
@@ -1983,14 +1901,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(VisibleDataChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(VisibleDataChangedEvent);
 	impl From<VisibleDataChangedEvent> for EventBodyOwned {
-		fn from(event: VisibleDataChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: VisibleDataChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2007,14 +1919,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(SelectionChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(SelectionChangedEvent);
 	impl From<SelectionChangedEvent> for EventBodyOwned {
-		fn from(event: SelectionChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: SelectionChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2031,14 +1937,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(ModelChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(ModelChangedEvent);
 	impl From<ModelChangedEvent> for EventBodyOwned {
-		fn from(event: ModelChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ModelChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2057,11 +1957,11 @@ pub mod object {
 	impl From<ActiveDescendantChangedEvent> for EventBodyOwned {
 		fn from(event: ActiveDescendantChangedEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: String::default(),
 				detail1: i32::default(),
 				detail2: i32::default(),
-				any_data: event.child,
-				properties: event.properties,
+				any_data: zvariant::Value::from(event.child).into(),
 			}
 		}
 	}
@@ -2081,11 +1981,11 @@ pub mod object {
 	impl From<AnnouncementEvent> for EventBodyOwned {
 		fn from(event: AnnouncementEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.text,
 				detail1: i32::default(),
 				detail2: i32::default(),
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -2103,14 +2003,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(AttributesChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(AttributesChangedEvent);
 	impl From<AttributesChangedEvent> for EventBodyOwned {
-		fn from(event: AttributesChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: AttributesChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2127,14 +2021,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(RowInsertedEvent);
 	crate::events::macros::impl_from_dbus_message!(RowInsertedEvent);
 	impl From<RowInsertedEvent> for EventBodyOwned {
-		fn from(event: RowInsertedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RowInsertedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2151,14 +2039,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(RowReorderedEvent);
 	crate::events::macros::impl_from_dbus_message!(RowReorderedEvent);
 	impl From<RowReorderedEvent> for EventBodyOwned {
-		fn from(event: RowReorderedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RowReorderedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2175,14 +2057,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(RowDeletedEvent);
 	crate::events::macros::impl_from_dbus_message!(RowDeletedEvent);
 	impl From<RowDeletedEvent> for EventBodyOwned {
-		fn from(event: RowDeletedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RowDeletedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2199,14 +2075,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(ColumnInsertedEvent);
 	crate::events::macros::impl_from_dbus_message!(ColumnInsertedEvent);
 	impl From<ColumnInsertedEvent> for EventBodyOwned {
-		fn from(event: ColumnInsertedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ColumnInsertedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2223,14 +2093,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(ColumnReorderedEvent);
 	crate::events::macros::impl_from_dbus_message!(ColumnReorderedEvent);
 	impl From<ColumnReorderedEvent> for EventBodyOwned {
-		fn from(event: ColumnReorderedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ColumnReorderedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2247,14 +2111,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(ColumnDeletedEvent);
 	crate::events::macros::impl_from_dbus_message!(ColumnDeletedEvent);
 	impl From<ColumnDeletedEvent> for EventBodyOwned {
-		fn from(event: ColumnDeletedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ColumnDeletedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2271,14 +2129,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(TextBoundsChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(TextBoundsChangedEvent);
 	impl From<TextBoundsChangedEvent> for EventBodyOwned {
-		fn from(event: TextBoundsChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: TextBoundsChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2295,14 +2147,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(TextSelectionChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(TextSelectionChangedEvent);
 	impl From<TextSelectionChangedEvent> for EventBodyOwned {
-		fn from(event: TextSelectionChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: TextSelectionChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2321,11 +2167,11 @@ pub mod object {
 	impl From<TextChangedEvent> for EventBodyOwned {
 		fn from(event: TextChangedEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.detail,
 				detail1: event.start_pos,
 				detail2: event.length,
-				any_data: event.text,
-				properties: event.properties,
+				any_data: zvariant::Value::from(event.text).into(),
 			}
 		}
 	}
@@ -2343,14 +2189,8 @@ pub mod object {
 	crate::events::macros::impl_to_dbus_message!(TextAttributesChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(TextAttributesChangedEvent);
 	impl From<TextAttributesChangedEvent> for EventBodyOwned {
-		fn from(event: TextAttributesChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: TextAttributesChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -2369,11 +2209,11 @@ pub mod object {
 	impl From<TextCaretMovedEvent> for EventBodyOwned {
 		fn from(event: TextCaretMovedEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: String::default(),
 				detail1: event.position,
 				detail2: i32::default(),
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -2527,7 +2367,7 @@ pub mod window {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -2657,7 +2497,6 @@ pub mod window {
 	pub struct PropertyChangeEvent {
 		pub item: crate::events::Accessible,
 		pub property: String,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2695,7 +2534,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct MinimizeEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2733,7 +2571,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct MaximizeEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2771,7 +2608,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RestoreEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2809,7 +2645,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct CloseEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2847,7 +2682,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct CreateEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2885,7 +2719,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ReparentEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2923,7 +2756,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct DesktopCreateEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2961,7 +2793,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct DesktopDestroyEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -2999,7 +2830,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct DestroyEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3037,7 +2867,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ActivateEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3075,7 +2904,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct DeactivateEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3113,7 +2941,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RaiseEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3151,7 +2978,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LowerEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3189,7 +3015,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct MoveEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3227,7 +3052,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ResizeEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3265,7 +3089,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ShadeEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3303,7 +3126,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct UUshadeEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -3341,7 +3163,6 @@ pub mod window {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct RestyleEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for PropertyChangeEvent {
@@ -3353,8 +3174,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, property: body.kind, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, property: body.kind })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3389,8 +3210,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3425,8 +3246,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3461,8 +3282,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3497,8 +3318,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3533,8 +3354,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3569,8 +3390,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3605,8 +3426,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3641,8 +3462,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3677,8 +3498,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3713,8 +3534,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3749,8 +3570,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3785,8 +3606,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3821,8 +3642,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3857,8 +3678,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3893,8 +3714,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3929,8 +3750,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -3965,8 +3786,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -4001,8 +3822,8 @@ pub mod window {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -4079,11 +3900,11 @@ pub mod window {
 	impl From<PropertyChangeEvent> for EventBodyOwned {
 		fn from(event: PropertyChangeEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.property,
 				detail1: i32::default(),
 				detail2: i32::default(),
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -4101,14 +3922,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(MinimizeEvent);
 	crate::events::macros::impl_from_dbus_message!(MinimizeEvent);
 	impl From<MinimizeEvent> for EventBodyOwned {
-		fn from(event: MinimizeEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: MinimizeEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4125,14 +3940,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(MaximizeEvent);
 	crate::events::macros::impl_from_dbus_message!(MaximizeEvent);
 	impl From<MaximizeEvent> for EventBodyOwned {
-		fn from(event: MaximizeEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: MaximizeEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4149,14 +3958,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(RestoreEvent);
 	crate::events::macros::impl_from_dbus_message!(RestoreEvent);
 	impl From<RestoreEvent> for EventBodyOwned {
-		fn from(event: RestoreEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RestoreEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4173,14 +3976,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(CloseEvent);
 	crate::events::macros::impl_from_dbus_message!(CloseEvent);
 	impl From<CloseEvent> for EventBodyOwned {
-		fn from(event: CloseEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: CloseEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4197,14 +3994,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(CreateEvent);
 	crate::events::macros::impl_from_dbus_message!(CreateEvent);
 	impl From<CreateEvent> for EventBodyOwned {
-		fn from(event: CreateEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: CreateEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4221,14 +4012,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(ReparentEvent);
 	crate::events::macros::impl_from_dbus_message!(ReparentEvent);
 	impl From<ReparentEvent> for EventBodyOwned {
-		fn from(event: ReparentEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ReparentEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4245,14 +4030,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(DesktopCreateEvent);
 	crate::events::macros::impl_from_dbus_message!(DesktopCreateEvent);
 	impl From<DesktopCreateEvent> for EventBodyOwned {
-		fn from(event: DesktopCreateEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: DesktopCreateEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4269,14 +4048,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(DesktopDestroyEvent);
 	crate::events::macros::impl_from_dbus_message!(DesktopDestroyEvent);
 	impl From<DesktopDestroyEvent> for EventBodyOwned {
-		fn from(event: DesktopDestroyEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: DesktopDestroyEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4293,14 +4066,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(DestroyEvent);
 	crate::events::macros::impl_from_dbus_message!(DestroyEvent);
 	impl From<DestroyEvent> for EventBodyOwned {
-		fn from(event: DestroyEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: DestroyEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4317,14 +4084,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(ActivateEvent);
 	crate::events::macros::impl_from_dbus_message!(ActivateEvent);
 	impl From<ActivateEvent> for EventBodyOwned {
-		fn from(event: ActivateEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ActivateEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4341,14 +4102,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(DeactivateEvent);
 	crate::events::macros::impl_from_dbus_message!(DeactivateEvent);
 	impl From<DeactivateEvent> for EventBodyOwned {
-		fn from(event: DeactivateEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: DeactivateEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4365,14 +4120,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(RaiseEvent);
 	crate::events::macros::impl_from_dbus_message!(RaiseEvent);
 	impl From<RaiseEvent> for EventBodyOwned {
-		fn from(event: RaiseEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RaiseEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4389,14 +4138,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(LowerEvent);
 	crate::events::macros::impl_from_dbus_message!(LowerEvent);
 	impl From<LowerEvent> for EventBodyOwned {
-		fn from(event: LowerEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LowerEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4413,14 +4156,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(MoveEvent);
 	crate::events::macros::impl_from_dbus_message!(MoveEvent);
 	impl From<MoveEvent> for EventBodyOwned {
-		fn from(event: MoveEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: MoveEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4437,14 +4174,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(ResizeEvent);
 	crate::events::macros::impl_from_dbus_message!(ResizeEvent);
 	impl From<ResizeEvent> for EventBodyOwned {
-		fn from(event: ResizeEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ResizeEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4461,14 +4192,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(ShadeEvent);
 	crate::events::macros::impl_from_dbus_message!(ShadeEvent);
 	impl From<ShadeEvent> for EventBodyOwned {
-		fn from(event: ShadeEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ShadeEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4485,14 +4210,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(UUshadeEvent);
 	crate::events::macros::impl_from_dbus_message!(UUshadeEvent);
 	impl From<UUshadeEvent> for EventBodyOwned {
-		fn from(event: UUshadeEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: UUshadeEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4509,14 +4228,8 @@ pub mod window {
 	crate::events::macros::impl_to_dbus_message!(RestyleEvent);
 	crate::events::macros::impl_from_dbus_message!(RestyleEvent);
 	impl From<RestyleEvent> for EventBodyOwned {
-		fn from(event: RestyleEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: RestyleEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -4651,7 +4364,7 @@ pub mod mouse {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -4766,7 +4479,6 @@ pub mod mouse {
 		pub item: crate::events::Accessible,
 		pub x: i32,
 		pub y: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -4806,7 +4518,6 @@ pub mod mouse {
 		pub item: crate::events::Accessible,
 		pub x: i32,
 		pub y: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -4847,7 +4558,6 @@ pub mod mouse {
 		pub detail: String,
 		pub mouse_x: i32,
 		pub mouse_y: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for AbsEvent {
@@ -4859,8 +4569,8 @@ pub mod mouse {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, x: body.detail1, y: body.detail2, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, x: body.detail1, y: body.detail2 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -4895,8 +4605,8 @@ pub mod mouse {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, x: body.detail1, y: body.detail2, properties: body.properties }
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, x: body.detail1, y: body.detail2 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -4931,14 +4641,8 @@ pub mod mouse {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self {
-				item,
-				detail: body.kind,
-				mouse_x: body.detail1,
-				mouse_y: body.detail2,
-				properties: body.properties,
-			}
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, detail: body.kind, mouse_x: body.detail1, mouse_y: body.detail2 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -4999,11 +4703,11 @@ pub mod mouse {
 	impl From<AbsEvent> for EventBodyOwned {
 		fn from(event: AbsEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: String::default(),
 				detail1: event.x,
 				detail2: event.y,
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -5023,11 +4727,11 @@ pub mod mouse {
 	impl From<RelEvent> for EventBodyOwned {
 		fn from(event: RelEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: String::default(),
 				detail1: event.x,
 				detail2: event.y,
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -5047,11 +4751,11 @@ pub mod mouse {
 	impl From<ButtonEvent> for EventBodyOwned {
 		fn from(event: ButtonEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: event.detail,
 				detail1: event.mouse_x,
 				detail2: event.mouse_y,
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -5091,7 +4795,7 @@ pub mod keyboard {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -5204,7 +4908,6 @@ pub mod keyboard {
 		pub item: crate::events::Accessible,
 		pub previous_modifiers: i32,
 		pub current_modifiers: i32,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for ModifiersEvent {
@@ -5216,13 +4919,8 @@ pub mod keyboard {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self {
-				item,
-				previous_modifiers: body.detail1,
-				current_modifiers: body.detail2,
-				properties: body.properties,
-			}
+		fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item, previous_modifiers: body.detail1, current_modifiers: body.detail2 })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5281,11 +4979,11 @@ pub mod keyboard {
 	impl From<ModifiersEvent> for EventBodyOwned {
 		fn from(event: ModifiersEvent) -> Self {
 			EventBodyOwned {
+				properties: std::collections::HashMap::new(),
 				kind: String::default(),
 				detail1: event.previous_modifiers,
 				detail2: event.current_modifiers,
 				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
 			}
 		}
 	}
@@ -5313,7 +5011,7 @@ pub mod terminal {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -5428,7 +5126,6 @@ pub mod terminal {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LineChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -5466,7 +5163,6 @@ pub mod terminal {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ColumnCountChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -5504,7 +5200,6 @@ pub mod terminal {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LineCountChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -5542,7 +5237,6 @@ pub mod terminal {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ApplicationChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -5580,7 +5274,6 @@ pub mod terminal {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct CharWidthChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for LineChangedEvent {
@@ -5592,8 +5285,8 @@ pub mod terminal {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5628,8 +5321,8 @@ pub mod terminal {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5664,8 +5357,8 @@ pub mod terminal {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5700,8 +5393,8 @@ pub mod terminal {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5736,8 +5429,8 @@ pub mod terminal {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -5798,14 +5491,8 @@ pub mod terminal {
 	crate::events::macros::impl_to_dbus_message!(LineChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(LineChangedEvent);
 	impl From<LineChangedEvent> for EventBodyOwned {
-		fn from(event: LineChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LineChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -5822,14 +5509,8 @@ pub mod terminal {
 	crate::events::macros::impl_to_dbus_message!(ColumnCountChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(ColumnCountChangedEvent);
 	impl From<ColumnCountChangedEvent> for EventBodyOwned {
-		fn from(event: ColumnCountChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ColumnCountChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -5846,14 +5527,8 @@ pub mod terminal {
 	crate::events::macros::impl_to_dbus_message!(LineCountChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(LineCountChangedEvent);
 	impl From<LineCountChangedEvent> for EventBodyOwned {
-		fn from(event: LineCountChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LineCountChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -5870,14 +5545,8 @@ pub mod terminal {
 	crate::events::macros::impl_to_dbus_message!(ApplicationChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(ApplicationChangedEvent);
 	impl From<ApplicationChangedEvent> for EventBodyOwned {
-		fn from(event: ApplicationChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ApplicationChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -5894,14 +5563,8 @@ pub mod terminal {
 	crate::events::macros::impl_to_dbus_message!(CharWidthChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(CharWidthChangedEvent);
 	impl From<CharWidthChangedEvent> for EventBodyOwned {
-		fn from(event: CharWidthChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: CharWidthChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -5952,7 +5615,7 @@ pub mod document {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -6068,7 +5731,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LoadCompleteEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -6106,7 +5768,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ReloadEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -6144,7 +5805,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct LoadStoppedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -6182,7 +5842,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct ContentChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -6220,7 +5879,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct AttributesChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	// IgnoreBlock start
@@ -6258,7 +5916,6 @@ pub mod document {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct PageChangedEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for LoadCompleteEvent {
@@ -6270,8 +5927,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6306,8 +5963,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6342,8 +5999,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6378,8 +6035,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6414,8 +6071,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6450,8 +6107,8 @@ pub mod document {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6513,14 +6170,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(LoadCompleteEvent);
 	crate::events::macros::impl_from_dbus_message!(LoadCompleteEvent);
 	impl From<LoadCompleteEvent> for EventBodyOwned {
-		fn from(event: LoadCompleteEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LoadCompleteEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6537,14 +6188,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(ReloadEvent);
 	crate::events::macros::impl_from_dbus_message!(ReloadEvent);
 	impl From<ReloadEvent> for EventBodyOwned {
-		fn from(event: ReloadEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ReloadEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6561,14 +6206,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(LoadStoppedEvent);
 	crate::events::macros::impl_from_dbus_message!(LoadStoppedEvent);
 	impl From<LoadStoppedEvent> for EventBodyOwned {
-		fn from(event: LoadStoppedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: LoadStoppedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6585,14 +6224,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(ContentChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(ContentChangedEvent);
 	impl From<ContentChangedEvent> for EventBodyOwned {
-		fn from(event: ContentChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: ContentChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6609,14 +6242,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(AttributesChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(AttributesChangedEvent);
 	impl From<AttributesChangedEvent> for EventBodyOwned {
-		fn from(event: AttributesChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: AttributesChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6633,14 +6260,8 @@ pub mod document {
 	crate::events::macros::impl_to_dbus_message!(PageChangedEvent);
 	crate::events::macros::impl_from_dbus_message!(PageChangedEvent);
 	impl From<PageChangedEvent> for EventBodyOwned {
-		fn from(event: PageChangedEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: PageChangedEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 
@@ -6697,7 +6318,7 @@ pub mod focus {
 	};
 	use zbus;
 	use zbus::names::UniqueName;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
 
 	// IgnoreBlock start
 	/// # Example
@@ -6808,7 +6429,6 @@ pub mod focus {
 	#[derive(Debug, PartialEq, Clone, Default)]
 	pub struct FocusEvent {
 		pub item: crate::events::Accessible,
-		pub properties: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 	}
 
 	impl GenericEvent<'_> for FocusEvent {
@@ -6820,8 +6440,8 @@ pub mod focus {
 
 		type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {
-			Self { item, properties: body.properties }
+		fn build(item: Accessible, _: Self::Body) -> Result<Self, AtspiError> {
+			Ok(Self { item })
 		}
 		fn sender(&self) -> UniqueName<'_> {
 			self.item.name.clone().into()
@@ -6878,14 +6498,8 @@ pub mod focus {
 	crate::events::macros::impl_to_dbus_message!(FocusEvent);
 	crate::events::macros::impl_from_dbus_message!(FocusEvent);
 	impl From<FocusEvent> for EventBodyOwned {
-		fn from(event: FocusEvent) -> Self {
-			EventBodyOwned {
-				kind: String::default(),
-				detail1: i32::default(),
-				detail2: i32::default(),
-				any_data: zbus::zvariant::Value::U8(0).into(),
-				properties: event.properties,
-			}
+		fn from(_: FocusEvent) -> Self {
+			EventBodyOwned::default()
 		}
 	}
 

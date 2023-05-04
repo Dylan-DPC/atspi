@@ -236,14 +236,18 @@ impl TryFrom<zvariant::OwnedValue> for Accessible {
 					return Err(zbus::Error::Variant(zvariant::Error::SignatureMismatch(s.signature(), format!("To turn a zvariant::Value into an atspi::Accessible, it must be of type {}", ACCESSIBLE_PAIR_SIGNATURE.as_str()))));
 				}
 				let fields = s.fields();
-				let name_value: String = fields.get(0).ok_or(zbus::Error::Variant(zvariant::Error::IncorrectType))?.try_into()?;
-				let path_value: String = fields.get(1).ok_or(zbus::Error::Variant(zvariant::Error::IncorrectType))?.try_into()?;
+				let name_value: String = fields
+					.get(0)
+					.ok_or(zbus::Error::Variant(zvariant::Error::IncorrectType))?
+					.try_into()?;
+				let path_value: String = fields
+					.get(1)
+					.ok_or(zbus::Error::Variant(zvariant::Error::IncorrectType))?
+					.try_into()?;
 				let name = UniqueName::try_from(name_value)?.into();
 				let path = ObjectPath::try_from(path_value)?.into();
-				Ok(Accessible {
-					name, path
-				})
-			},
+				Ok(Accessible { name, path })
+			}
 			_ => Err(zbus::Error::Variant(zvariant::Error::IncorrectType)),
 		}
 	}
@@ -499,7 +503,9 @@ pub trait GenericEvent<'a> {
 	type Body: Type + Serialize + Deserialize<'a>;
 
 	/// Build the event from the object pair (Accessible and the Body).
-	fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError> where Self: Sized;
+	fn build(item: Accessible, body: Self::Body) -> Result<Self, AtspiError>
+	where
+		Self: Sized;
 
 	/// Path of the signalling object.
 	fn path(&self) -> ObjectPath<'_>;
@@ -527,8 +533,7 @@ pub trait HasRegistryEventString {
 mod tests {
 	use crate::events::{
 		Accessible, AddAccessibleEvent, CacheEvents, CacheItem, Event, EventBodyOwned, EventBodyQT,
-		GenericEvent, RemoveAccessibleEvent, ATSPI_EVENT_SIGNATURE,
-		QSPI_EVENT_SIGNATURE,
+		GenericEvent, RemoveAccessibleEvent, ATSPI_EVENT_SIGNATURE, QSPI_EVENT_SIGNATURE,
 	};
 	use crate::{accessible::Role, AccessibilityConnection, InterfaceSet, StateSet};
 	use futures_lite::StreamExt;
