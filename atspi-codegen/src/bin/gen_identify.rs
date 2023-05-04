@@ -16,6 +16,19 @@ use zbus::zvariant::{
 
 const STRIPPER_IGNORE_START: &str = "// IgnoreBlock start";
 const STRIPPER_IGNORE_STOP: &str = "// IgnoreBlock stop";
+/// This constant helps with a member of a particular interface implementing the `GenericEvent`, `TryFrom<&zbus::Message>` and `TryFrom<T> for zbus::Message` implementations.
+/// It defines:
+/// 1. The interface of the event.
+/// 2. The member of the interface.
+/// 3. The name of the member return type that needs to be overwritten.
+/// 4. a type that should be used instead of the `zvariant::Value` type in the sturct.
+/// If the types are incorrect, it should be caught during testing, as events will be sent over the bus to confirm everything is functioning correctly.
+const AUTO_IMPL_HELP: [(&'static str, &'static str, &'static str, &'static str); 4] = [
+	("org.a11y.atspi.Event.Object", "PropertyChange", "value", "String"),
+	("org.a11y.atspi.Event.Object", "ChildrenChanged", "child", "Accessible"),
+	("org.a11y.atspi.Event.Object", "ActiveDescendantChanged", "child", "String"),
+	("org.a11y.atspi.Event.Object", "TextChanged", "text", "String"),
+];
 
 enum AtspiEventInnerName {
     Detail1,
@@ -220,7 +233,16 @@ where
     into_rust_enum_str(sig_name_event_str)
 }
 
-fn generate_struct_literal_conversion_for_signal_item(signal_item: &Arg, inner_event_name: AtspiEventInnerName2) -> String {
+fn auto_impl_type_override(iface: &Interface, signal: &Signal, field: &Arg) -> Option<&'static str> {
+	for (m_iface, m_member, m_field_name, m_type) in AUTO_IMPL_HELP {
+		if (m_iface, m_member, m_field_name) == (iface.name(), signal.name(), field.name()?) {
+			return Some(m_type);
+		}
+	}
+	None
+}
+
+fn generate_struct_literal_conversion_for_signal_item(iface: &Interface, signal: &Signal, signal_item: &Arg, inner_event_name: AtspiEventInnerName2) -> String {
     if signal_item.name().is_none() {
         return String::new();
     }
@@ -228,9 +250,13 @@ fn generate_struct_literal_conversion_for_signal_item(signal_item: &Arg, inner_e
     let field_name = signal_item.name().expect("No name for arg");
     let msg_field_name = inner_event_name.to_string();
 
-    format!("{field_name}: body.{msg_field_name}")
+		if let Some(_) = auto_impl_type_override(iface, signal, signal_item) {
+			format!("{field_name}: body.{msg_field_name}.try_into()?")
+		} else {
+			format!("{field_name}: body.{msg_field_name}")
+		}
 }
-fn generate_reverse_struct_literal_conversion_for_signal_item(signal_item: &Arg, inner_event_name: AtspiEventInnerName2) -> String {
+fn generate_reverse_struct_literal_conversion_for_signal_item(iface: &Interface, signal: &Signal, signal_item: &Arg, inner_event_name: AtspiEventInnerName2) -> String {
     let rust_type = to_rust_type(signal_item.ty(), true, true);
     let value = if signal_item.name().is_none() {
       if rust_type == "zbus::zvariant::OwnedValue" {
@@ -239,21 +265,29 @@ fn generate_reverse_struct_literal_conversion_for_signal_item(signal_item: &Arg,
         format!("{rust_type}::default()")
       }
     } else {
-      let field_name = signal_item.name().expect("No name for arg");
-      format!("event.{field_name}")
+			let field_name = signal_item.name().unwrap();
+			if let Some(_) = auto_impl_type_override(iface, signal, signal_item) {
+				format!("zvariant::Value::from(event.{field_name}).into()")
+			} else {
+				format!("event.{field_name}")
+			}
     };
     // unwrap is safe due to check
     let msg_field_name = inner_event_name.to_string();
 
     format!("{msg_field_name}: {value}")
 }
-fn default_for_signal_item(signal_item: &Arg) -> String {
-    let rust_type = to_rust_type(signal_item.ty(), true, true);
+fn default_for_signal_item(iface: &Interface, signal: &Signal, signal_item: &Arg) -> String {
 		let Some(field_name) = signal_item.name() else {
 			return String::new();
 		};
-		let value = if rust_type == "zbus::zvariant::OwnedValue" {
-			"zbus::zvariant::Value::U8(0).into()".to_string()
+		let rust_type = if let Some(type_override) = auto_impl_type_override(iface, signal, signal_item) {
+			type_override.to_string()
+		} else {
+			to_rust_type(signal_item.ty(), true, true)
+		};
+		let value = if rust_type.contains("zvariant::OwnedValue") {
+			"zvariant::Value::U8(0).into()".to_string()
 		} else if rust_type.starts_with("std::collections::HashMap") {
 			"std::collections::HashMap::new()".to_string()
 		} else {
@@ -261,13 +295,17 @@ fn default_for_signal_item(signal_item: &Arg) -> String {
 		};
     format!("{field_name}: {value}")
 }
-fn generate_field_for_signal_item(signal_item: &Arg) -> String {
+fn generate_field_for_signal_item(iface: &Interface, signal: &Signal, signal_item: &Arg) -> String {
     if signal_item.name().is_none() || signal_item.name().unwrap() == "properties" {
         return String::new();
     }
+		let rust_type = if let Some(type_override) = auto_impl_type_override(iface, signal, signal_item) {
+			type_override.to_string()
+		} else {
+			to_rust_type(signal_item.ty(), true, true)
+		};
     // unwrap is safe due to check
     let function_name = signal_item.name().expect("No name for arg");
-    let rust_type = to_rust_type(signal_item.ty(), true, true);
 
     format!("   pub {function_name}: {rust_type},
 ")
@@ -399,7 +437,7 @@ fn generate_signal_associated_example(mod_name: &str, signal_event_name: &str) -
     )
 }
 
-fn generate_struct_from_signal(mod_name: &str, signal: &Signal, derive_default: bool) -> String {
+fn generate_struct_from_signal(mod_name: &str, iface: &Interface, signal: &Signal, derive_default: bool) -> String {
     let sig_name_event = event_ident(signal.name());
     let example = generate_signal_associated_example(mod_name, &sig_name_event);
 		let derives = {
@@ -409,7 +447,11 @@ fn generate_struct_from_signal(mod_name: &str, signal: &Signal, derive_default: 
 			}
 			derive_types
 		}.join(", ");
-    let fields = for_signal_args(signal, generate_field_for_signal_item).join("");
+    let fields = signal.args()
+			.iter()
+			.map(|arg| generate_field_for_signal_item(iface, signal, arg))
+			.collect::<Vec<String>>()
+			.join("");
     format!(
         "
     {example}
@@ -474,19 +516,19 @@ fn is_empty_body(_iface: &Interface, signal: &Signal) -> bool {
 		.collect::<Vec<bool>>()
 		.is_empty()
 }
-fn can_derive_default(_iface: &Interface, signal: &Signal) -> bool {
+fn can_derive_default(iface: &Interface, signal: &Signal) -> bool {
 	signal.args()
 		.iter()
 		.enumerate()
 		.filter_map(|(i, arg)| {
 			arg.name()?;
 			TryInto::<AtspiEventInnerName2>::try_into(i).ok()?;
-			if default_for_signal_item(arg).contains("Value") { Some(false) } else { None }
+			if default_for_signal_item(iface, signal, arg).contains("Value") { Some(false) } else { None }
 		})
 		.collect::<Vec<bool>>()
 		.is_empty()
 }
-fn generate_default_for_signal(_iface: &Interface, signal: &Signal) -> String {
+fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
 		println!("GENERATE DEFAULT FOR {}", signal.name());
     let iname = signal.name();
     let impl_for_name = event_ident(iname);
@@ -497,7 +539,7 @@ fn generate_default_for_signal(_iface: &Interface, signal: &Signal) -> String {
         .filter_map(|(i, arg)| {
 						arg.name()?;
 						TryInto::<AtspiEventInnerName2>::try_into(i).ok()?;
-            Some(default_for_signal_item(arg))
+            Some(default_for_signal_item(iface, signal, arg))
         })
         .collect::<Vec<String>>()
         .join(", ");
@@ -532,7 +574,7 @@ fn generate_try_from_event_body(iface: &Interface, signal: &Signal, empty_body: 
             let Ok(field_name) = i.try_into() else {
               return None;
             };
-            Some(generate_reverse_struct_literal_conversion_for_signal_item(arg, field_name))
+            Some(generate_reverse_struct_literal_conversion_for_signal_item(iface, signal, arg, field_name))
         })
         .collect::<Vec<String>>()
         .join(", ");
@@ -640,7 +682,7 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_
             let Ok(field_name) = i.try_into() else {
               return None;
             };
-            Some(generate_struct_literal_conversion_for_signal_item(arg, field_name))
+            Some(generate_struct_literal_conversion_for_signal_item(interface, signal, arg, field_name))
         })
         .collect::<Vec<String>>()
         .join(", ");
@@ -658,11 +700,11 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_
 			
 			type Body = EventBodyOwned;
 
-		fn build(item: Accessible, {body_var_name}: Self::Body) -> Self {{
-			Self {{
+		fn build(item: Accessible, {body_var_name}: Self::Body) -> Result<Self, AtspiError> {{
+			Ok(Self {{
 				item,
 				{signal_conversion_lit}	
-			}}
+			}})
 		}}
     fn sender(&self) -> UniqueName<'_> {{
       self.item.name.clone().into()
@@ -685,7 +727,7 @@ fn generate_mod_from_iface(iface: &Interface) -> String {
     let enums = generate_enum_from_iface(iface);
 		let derive_default = for_interface_signals(iface, can_derive_default);
     let structs = std::iter::zip(derive_default.iter(), iface.signals())
-        .map(|(derive_default, signal)| generate_struct_from_signal(&mod_name, signal, *derive_default))
+        .map(|(derive_default, signal)| generate_struct_from_signal(&mod_name, iface, signal, *derive_default))
         .collect::<Vec<String>>()
         .join("\n");
 		let impls = for_interface_signals(iface, generate_impl_from_signal).join("\n");
@@ -720,7 +762,7 @@ pub mod {mod_name} {{
 		events::{{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible}},
 	}};
 	use zbus;
-	use zbus::zvariant::ObjectPath;
+	use zvariant::ObjectPath;
   use zbus::names::UniqueName;
 	{enums}
 	{match_rule_vec_impl}
