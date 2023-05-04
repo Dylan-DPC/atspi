@@ -486,7 +486,7 @@ fn can_derive_default(_iface: &Interface, signal: &Signal) -> bool {
 		.collect::<Vec<bool>>()
 		.is_empty()
 }
-fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
+fn generate_default_for_signal(_iface: &Interface, signal: &Signal) -> String {
 		println!("GENERATE DEFAULT FOR {}", signal.name());
     let iname = signal.name();
     let impl_for_name = event_ident(iname);
@@ -544,19 +544,6 @@ r#"EventBodyOwned {{
 		} else {
 			"EventBodyOwned::default()".to_string()
 		};
-    let signal_conversion_lit = signal
-        .args()
-        .iter()
-        .enumerate()
-        .filter_map(|(i, arg)| {
-						arg.name()?;
-            let Ok(field_name) = i.try_into() else {
-              return None;
-            };
-            Some(generate_struct_literal_conversion_for_signal_item(arg, field_name))
-        })
-        .collect::<Vec<String>>()
-        .join(", ");
     format!("
 	impl From<{impl_for_name}> for {enum_variant} {{
 		fn from(specific_event: {impl_for_name}) -> Self {{

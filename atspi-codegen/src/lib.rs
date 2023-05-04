@@ -1,4 +1,4 @@
-#![warn(
+#![deny(
 	unsafe_code,
 	clippy::all,
 	clippy::pedantic,
@@ -80,11 +80,13 @@ pub struct Annotation {
 
 impl Annotation {
     /// Return the annotation name/key.
+		#[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Return the annotation value.
+		#[must_use]
     pub fn value(&self) -> &str {
         &self.value
     }
@@ -109,16 +111,19 @@ pub struct Arg {
 
 impl Arg {
     /// Return the argument name, if any.
+		#[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
     /// Return the argument type.
+		#[must_use]
     pub fn ty(&self) -> &str {
         &self.r#type
     }
 
     /// Return the signature type.
+		#[must_use]
     pub fn signature(&self) -> zbus::zvariant::Signature<'static> {
         zbus::zvariant::Signature::try_from(self.ty())
             .expect("Could not create DBus signature from {self.type}")
@@ -126,11 +131,13 @@ impl Arg {
     }
 
     /// Return the argument direction (should be "in" or "out"), if any.
+		#[must_use]
     pub fn direction(&self) -> Option<Direction> {
         self.direction
     }
 
     /// Return the associated annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         self.annotations.iter().collect()
     }
@@ -154,16 +161,19 @@ pub struct Method {
 
 impl Method {
     /// Return the method name.
+		#[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Return the method arguments.
+		#[must_use]
     pub fn args(&self) -> Vec<&Arg> {
         get_vec!(self.elems, MethodElement::Arg)
     }
 
     /// Return the method annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         get_vec!(self.elems, MethodElement::Annotation)
     }
@@ -187,16 +197,19 @@ pub struct Signal {
 
 impl Signal {
     /// Return the signal name.
+		#[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Return the signal arguments.
+		#[must_use]
     pub fn args(&self) -> Vec<&Arg> {
         get_vec!(self.elems, SignalElement::Arg)
     }
 
     /// Return the signal annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         get_vec!(self.elems, SignalElement::Annotation)
     }
@@ -223,16 +236,19 @@ pub struct Property {
 
 impl Property {
     /// Returns the property name.
+		#[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Returns the property type.
+		#[must_use]
     pub fn ty(&self) -> &str {
         &self.r#type
     }
 
     /// Return the signature type.
+		#[must_use]
     pub fn signature(&self) -> zbus::zvariant::Signature<'static> {
         zbus::zvariant::Signature::try_from(self.ty())
             .expect("Could not create DBus signature from {self.type}")
@@ -240,11 +256,13 @@ impl Property {
     }
 
     /// Returns the property access flags (should be "read", "write" or "readwrite").
+		#[must_use]
     pub fn access(&self) -> Access {
         self.access
     }
 
     /// Return the associated annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         self.annotations.iter().collect()
     }
@@ -270,26 +288,31 @@ pub struct Interface {
 
 impl Interface {
     /// Returns the interface name.
+		#[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// Returns the interface methods.
+		#[must_use]
     pub fn methods(&self) -> Vec<&Method> {
         get_vec!(self.elems, InterfaceElement::Method)
     }
 
     /// Returns the interface signals.
+		#[must_use]
     pub fn signals(&self) -> Vec<&Signal> {
         get_vec!(self.elems, InterfaceElement::Signal)
     }
 
     /// Returns the interface properties.
+		#[must_use]
     pub fn properties(&self) -> Vec<&Property> {
         get_vec!(self.elems, InterfaceElement::Property)
     }
 
     /// Return the associated annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         get_vec!(self.elems, InterfaceElement::Annotation)
     }
@@ -322,36 +345,45 @@ pub struct Node {
 
 impl Node {
     /// Parse the introspection XML document from reader.
+		/// # Errors
+		/// Fails if there is failure to read the file, or deserialization files.
     pub fn from_reader<R: Read>(reader: R) -> Result<Node, Error> {
         from_reader(reader)
     }
 
     /// Write the XML document to writer.
+		/// # Errors
+		/// Fails if there is failure to write the file out to disk.
     pub fn to_writer<W: Write>(&self, writer: W) -> Result<(), Error> {
         to_writer(writer, &self)
     }
 
     /// Returns the node name, if any.
+		#[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
     /// Return the node documentation, if any.
+		#[must_use]
     pub fn doc(&self) -> Option<Doc> {
         get_doc!(self.elems, NodeElement::Doc)
     }
 
     /// Returns the children nodes.
+		#[must_use]
     pub fn nodes(&self) -> Vec<&Node> {
         get_vec!(self.elems, NodeElement::Node)
     }
 
     /// Returns the interfaces on this node.
+		#[must_use]
     pub fn interfaces(&self) -> Vec<&Interface> {
         get_vec!(self.elems, NodeElement::Interface)
     }
 
     /// Return the associated annotations.
+		#[must_use]
     pub fn annotations(&self) -> Vec<&Annotation> {
         get_vec!(self.elems, NodeElement::Annotation)
     }
