@@ -80,9 +80,6 @@ pub mod value;
 #[cfg(feature = "unstable-traits")]
 pub mod value_ext;
 
-#[cfg(feature = "wasm-types")]
-pub mod wasm_types;
-
 // Hand-written connection module
 #[cfg(feature = "client-accessories")]
 mod accessibility_connection;
