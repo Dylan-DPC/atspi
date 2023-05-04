@@ -31,6 +31,7 @@ atspi-macros.workspace = true
 enumflags2 = "^0.7.5"
 serde.workspace = true
 zbus.workspace = true
+zvariant.workspace = true
 # optioanl dependencies
 futures-lite = { version = "1.12", default-features = false, optional = true }
 tracing = { version = "^0.1.37", optional = true }
