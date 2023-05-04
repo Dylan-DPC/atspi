@@ -1,18 +1,8 @@
-//! Introspection XML support (`xml` feature)
-//!
-//! Thanks to the [`org.freedesktop.DBus.Introspectable`] interface, objects may be introspected at
-//! runtime, returning an XML string that describes the object.
-//!
-//! This optional `xml` module provides facilities to parse the XML data into more convenient Rust
-//! structures. The XML string may be parsed to a tree with [`Node.from_reader()`].
-//!
-//! See also:
-//!
-//! * [Introspection format] in the DBus specification
-//!
-//! [`Node.from_reader()`]: struct.Node.html#method.from_reader
-//! [Introspection format]: https://dbus.freedesktop.org/doc/dbus-specification.html#introspection-format
-//! [`org.freedesktop.DBus.Introspectable`]: https://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-introspectable
+#![warn(
+	unsafe_code,
+	clippy::all,
+	clippy::pedantic,
+)]
 
 use serde::{Deserialize, Serialize};
 use serde_xml_rs::{from_reader, from_str, to_writer, Error};
@@ -40,6 +30,29 @@ macro_rules! get_doc {
             .get(0)
             .cloned()
     };
+}
+
+pub fn for_signals<F>(node: &Node, func: F) -> String 
+	where F: Fn(&Interface, &Signal) -> String {
+	node.interfaces()
+		.iter()
+		.map(|iface| iface.signals()
+			.iter()
+			.map(|signal| func(iface, signal))
+			.collect::<Vec<String>>()
+			.join("\n")
+		)
+		.collect::<Vec<String>>()
+		.join("\n")
+}
+
+pub fn for_interfaces<F>(node: &Node, func: F) -> String 
+	where F: Fn(&Interface) -> String {
+	node.interfaces()
+		.iter()
+		.map(|iface| func(iface))
+		.collect::<Vec<String>>()
+		.join("\n")
 }
 
 /// Annotations are generic key/value pairs of metadata.
