@@ -87,6 +87,18 @@ pub struct EventBodyOwned {
 	pub properties: HashMap<String, OwnedValue>,
 }
 
+impl Default for EventBodyOwned {
+	fn default() -> Self {
+		EventBodyOwned {
+			kind: String::default(),
+			detail1: 0,
+			detail2: 0,
+			any_data: Value::U8(0).into(),
+			properties: HashMap::new(),
+		}
+	}
+}
+
 impl From<EventBodyQT> for EventBodyOwned {
 	fn from(body: EventBodyQT) -> Self {
 		let mut props = HashMap::new();
@@ -488,15 +500,13 @@ pub trait HasRegistryEventString {
 mod tests {
 	use crate::events::{
 		Accessible, AddAccessibleEvent, CacheEvents, CacheItem, Event, EventBodyOwned, EventBodyQT,
-		GenericEvent, RemoveAccessibleEvent, ACCESSIBLE_PAIR_SIGNATURE, ATSPI_EVENT_SIGNATURE,
-		CACHE_ADD_SIGNATURE, QSPI_EVENT_SIGNATURE,
+		GenericEvent, RemoveAccessibleEvent, ATSPI_EVENT_SIGNATURE,
+		QSPI_EVENT_SIGNATURE,
 	};
 	use crate::{accessible::Role, AccessibilityConnection, InterfaceSet, StateSet};
 	use futures_lite::StreamExt;
-	use std::{collections::HashMap, time::Duration};
-	use tokio::time::timeout;
+	use std::collections::HashMap;
 	use zbus::zvariant::{ObjectPath, OwnedObjectPath, Type, Value};
-	use zbus::{names::UniqueName, Message, MessageBuilder};
 
 	#[test]
 	fn check_event_body_qt_signature() {
