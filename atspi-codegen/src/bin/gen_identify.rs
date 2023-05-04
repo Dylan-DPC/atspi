@@ -330,7 +330,7 @@ fn generate_try_from_event_impl(signal: &Signal, interface: &Interface) -> Strin
     )
 }
 
-fn generate_impl_from_signal(signal: &Signal, interface: &Interface) -> String {
+fn generate_impl_from_signal( interface: &Interface, signal: &Signal) -> String {
     let try_from_event_impl = generate_try_from_event_impl(signal, interface);
     let generic_event_impl = generate_generic_event_impl(signal, interface);
 
@@ -409,14 +409,7 @@ fn generate_struct_from_signal(mod_name: &str, signal: &Signal, derive_default: 
 			}
 			derive_types
 		}.join(", ");
-    let fields = signal
-        .args()
-        .iter()
-        .map(|arg| {
-            generate_field_for_signal_item(arg)
-        })
-        .collect::<Vec<String>>()
-        .join("");
+    let fields = for_signal_args(signal, generate_field_for_signal_item).join("");
     format!(
         "
     {example}
@@ -435,10 +428,10 @@ fn generate_variant_from_signal(signal: &Signal) -> String {
     format!("		{sig_name}({sig_name_event}),")
 }
 
-fn match_arm_for_signal(iface_name: &str, signal: &Signal) -> String {
+fn match_arm_for_signal(iface: &Interface, signal: &Signal) -> String {
     let raw_signal_name = signal.name();
     let enum_signal_name = into_rust_enum_str(raw_signal_name);
-    let enum_name = events_ident(iface_name);
+    let enum_name = events_ident(iface_name(iface));
     format!(
         "				\"{raw_signal_name}\" => Ok({enum_name}::{enum_signal_name}(ev.try_into()?)),"
     )
@@ -449,12 +442,7 @@ fn generate_try_from_atspi_event(iface: &Interface) -> String {
     let error_str = format!("No matching member for {iname}");
     let impl_for_name = events_ident(&iname);
 		let enum_name = iface_to_enum_name(iface);
-    let member_conversions = iface
-        .signals()
-        .iter()
-        .map(|signal| match_arm_for_signal(&iname, signal))
-        .collect::<Vec<String>>()
-        .join("\n");
+		let member_conversions = for_interface_signals(iface, match_arm_for_signal).join("\n");
     format!("
 	impl From<{impl_for_name}> for Event {{
 		fn from(event_enum: {impl_for_name}) -> Self {{
@@ -474,14 +462,12 @@ fn generate_try_from_atspi_event(iface: &Interface) -> String {
 	}}
 	")
 }
-fn can_derive_default(iface: &Interface, signal: &Signal) -> bool {
-	signal.args()
-		.iter()
-		.filter_map(|arg| {
-			if default_for_signal_item(arg).contains("Value") { Some(false) } else { None }
-		})
-		.collect::<Vec<bool>>()
-		.is_empty()
+fn can_derive_default(_iface: &Interface, signal: &Signal) -> bool {
+	for_signal_args(signal, |arg| {
+			if default_for_signal_item(arg).contains("Value") { false } else { true }
+	})
+	.iter()
+	.all(|t| t == &true)
 }
 fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
 		println!("GENERATE DEFAULT FOR {}", signal.name());
@@ -587,7 +573,7 @@ fn generate_registry_event_enum_impl(interface: &Interface) -> String {
 	}}"
     )
 }
-fn generate_registry_event_impl(signal: &Signal, interface: &Interface) -> String {
+fn generate_registry_event_impl(interface: &Interface, signal: &Signal) -> String {
     let sig_name_event = event_ident(signal.name());
     let member_string = signal.name();
     let iface_prefix = iface_name(interface);
@@ -598,7 +584,7 @@ fn generate_registry_event_impl(signal: &Signal, interface: &Interface) -> Strin
     )
 }
 
-fn generate_match_rule_impl(signal: &Signal, interface: &Interface) -> String {
+fn generate_match_rule_impl(interface: &Interface, signal: &Signal) -> String {
     let sig_name_event = event_ident(signal.name());
     let member_string = signal.name();
     let iface_long_name = interface.name();
@@ -675,28 +661,14 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface) -> String
 fn generate_mod_from_iface(iface: &Interface) -> String {
     let mod_name = iface_name(iface).to_lowercase();
     let enums = generate_enum_from_iface(iface);
-		let derive_default = iface
-				.signals()
-				.iter()
-				.map(|signal| can_derive_default(iface, signal))
-				.collect::<Vec<bool>>();
+		let derive_default = for_interface_signals(iface, can_derive_default);
     let structs = std::iter::zip(derive_default.iter(), iface.signals())
         .map(|(derive_default, signal)| generate_struct_from_signal(&mod_name, signal, *derive_default))
         .collect::<Vec<String>>()
         .join("\n");
-    let impls = iface
-        .signals()
-        .iter()
-        .map(|signal| generate_impl_from_signal(signal, iface))
-        .collect::<Vec<String>>()
-        .join("\n");
+		let impls = for_interface_signals(iface, generate_impl_from_signal).join("\n");
     let try_from_atspi = generate_try_from_atspi_event(iface);
-    let from_event_body = iface
-        .signals()
-        .iter()
-        .map(|signal| generate_try_from_event_body(iface, signal))
-        .collect::<Vec<String>>()
-        .join("\n");
+		let from_event_body = for_interface_signals(iface, generate_try_from_event_body).join("\n");
 		let default_impls = std::iter::zip(derive_default.iter(), iface.signals())
         .filter_map(|(derive, signal)| if !derive {
 					Some(generate_default_for_signal(iface, signal))
@@ -706,18 +678,8 @@ fn generate_mod_from_iface(iface: &Interface) -> String {
         .collect::<Vec<String>>()
         .join("\n");
     let registry_event_enum_impl = generate_registry_event_enum_impl(iface);
-    let registry_event_impls = iface
-        .signals()
-        .iter()
-        .map(|signal| generate_registry_event_impl(signal, iface))
-        .collect::<Vec<String>>()
-        .join("\n");
-    let match_rule_impls = iface
-        .signals()
-        .iter()
-        .map(|signal| generate_match_rule_impl(signal, iface))
-        .collect::<Vec<String>>()
-        .join("\n");
+		let registry_event_impls = for_interface_signals(iface, generate_registry_event_impl).join("\n");
+		let match_rule_impls = for_interface_signals(iface, generate_match_rule_impl).join("\n");
     let match_rule_vec_impl = generate_match_rule_vec_impl(iface);
     format!(
         "
@@ -826,12 +788,7 @@ fn generate_enum_from_iface(iface: &Interface) -> String {
 		let interface_name = iface.name();
     let example = generate_enum_associated_example(&mod_name, &sig_name_event, signal.name(), interface_name, &name_ident);
     let name_ident_plural = events_ident(name_ident);
-    let signal_quotes = iface
-        .signals()
-        .into_iter()
-        .map(generate_variant_from_signal)
-        .collect::<Vec<String>>()
-        .join("");
+    let signal_quotes = for_signal_interfaces(iface, generate_variant_from_signal).join("");
     format!(
         "
     {example}
@@ -1254,7 +1211,7 @@ pub fn main() {
 
     // Assumes being run from atspi crate root
     let crate_root = Path::new("./");
-    let src_path = Path::new("src/");
+    let src_path = Path::new("atspi/src/");
 
     // The program expects one argument at a time.
     match args {

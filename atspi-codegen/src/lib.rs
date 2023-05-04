@@ -55,6 +55,22 @@ pub fn for_interfaces<F>(node: &Node, func: F) -> String
 		.join("\n")
 }
 
+pub fn for_signal_args<T, F>(signal: &Signal, func: F) -> Vec<T>
+	where F: Fn(&Arg) -> T {
+	signal.args()
+		.iter()
+		.map(|arg| func(arg))
+		.collect::<Vec<T>>()
+}
+
+pub fn for_interface_signals<T, F>(iface: &Interface, func: F) -> Vec<T>
+	where F: Fn(&Interface, &Signal) -> T {
+	iface.signals()
+		.iter()
+		.map(|signal| func(iface, signal))
+		.collect::<Vec<T>>()
+}
+
 /// Annotations are generic key/value pairs of metadata.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Annotation {
