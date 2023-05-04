@@ -27,7 +27,7 @@ enum AtspiEventInnerName2 {
     Detail1,
     Detail2,
     AnyData,
-    Properties,
+//    Properties,
 }
 
 impl ToString for AtspiEventInnerName {
@@ -47,7 +47,7 @@ impl ToString for AtspiEventInnerName2 {
             Self::Detail1 => "detail1",
             Self::Detail2 => "detail2",
             Self::AnyData => "any_data",
-            Self::Properties => "properties",
+//            Self::Properties => "properties",
         }
         .to_string()
     }
@@ -67,7 +67,7 @@ impl TryFrom<usize> for AtspiEventInnerName2 {
             1 => Ok(Self::Detail1),
             2 => Ok(Self::Detail2),
             3 => Ok(Self::AnyData),
-            4 => Ok(Self::Properties),
+            //4 => Ok(Self::Properties),
             _ => Err(ConversionError::UnknownItem),
         }
     }
@@ -262,7 +262,7 @@ fn default_for_signal_item(signal_item: &Arg) -> String {
     format!("{field_name}: {value}")
 }
 fn generate_field_for_signal_item(signal_item: &Arg) -> String {
-    if signal_item.name().is_none() {
+    if signal_item.name().is_none() || signal_item.name().unwrap() == "properties" {
         return String::new();
     }
     // unwrap is safe due to check
@@ -332,7 +332,7 @@ fn generate_try_from_event_impl(signal: &Signal, interface: &Interface) -> Strin
 
 fn generate_impl_from_signal( interface: &Interface, signal: &Signal) -> String {
     let try_from_event_impl = generate_try_from_event_impl(signal, interface);
-    let generic_event_impl = generate_generic_event_impl(signal, interface);
+    let generic_event_impl = generate_generic_event_impl(signal, interface, is_empty_body(interface, signal));
 
     format!(
         "
@@ -422,7 +422,7 @@ fn generate_struct_from_signal(mod_name: &str, signal: &Signal, derive_default: 
     )
 }
 
-fn generate_variant_from_signal(signal: &Signal) -> String {
+fn generate_variant_from_signal(_iface: &Interface, signal: &Signal) -> String {
     let sig_name = into_rust_enum_str(signal.name());
     let sig_name_event = event_ident(signal.name());
     format!("		{sig_name}({sig_name_event}),")
@@ -462,12 +462,29 @@ fn generate_try_from_atspi_event(iface: &Interface) -> String {
 	}}
 	")
 }
+fn is_empty_body(_iface: &Interface, signal: &Signal) -> bool {
+	signal.args()
+		.iter()
+		.enumerate()
+		.filter_map(|(i, arg)| {
+			arg.name()?;
+			TryInto::<AtspiEventInnerName2>::try_into(i).ok()?;
+			Some(true)
+		})
+		.collect::<Vec<bool>>()
+		.is_empty()
+}
 fn can_derive_default(_iface: &Interface, signal: &Signal) -> bool {
-	for_signal_args(signal, |arg| {
-			if default_for_signal_item(arg).contains("Value") { false } else { true }
-	})
-	.iter()
-	.all(|t| t == &true)
+	signal.args()
+		.iter()
+		.enumerate()
+		.filter_map(|(i, arg)| {
+			arg.name()?;
+			TryInto::<AtspiEventInnerName2>::try_into(i).ok()?;
+			if default_for_signal_item(arg).contains("Value") { Some(false) } else { None }
+		})
+		.collect::<Vec<bool>>()
+		.is_empty()
 }
 fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
 		println!("GENERATE DEFAULT FOR {}", signal.name());
@@ -476,8 +493,10 @@ fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
     let default_struct_lit = signal
         .args()
         .iter()
-        .filter_map(|arg| {
+				.enumerate()
+        .filter_map(|(i, arg)| {
 						arg.name()?;
+						TryInto::<AtspiEventInnerName2>::try_into(i).ok()?;
             Some(default_for_signal_item(arg))
         })
         .collect::<Vec<String>>()
@@ -493,13 +512,19 @@ fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
 	}}
 	")
 }
-fn generate_try_from_event_body(iface: &Interface, signal: &Signal) -> String {
+fn generate_try_from_event_body(iface: &Interface, signal: &Signal, empty_body: bool) -> String {
     let iname = signal.name();
     let impl_for_name = event_ident(iname);
 		let iface_variant = iface_name(iface);
 		let enum_variant = events_ident(iface_variant.clone());
 		let event_variant = into_rust_enum_str(iname);
-    let reverse_signal_conversion_lit = signal
+		let event_var_name = if empty_body {
+			"_"
+		} else {
+			"event"
+		}.to_string();
+    let to_event_body = if !empty_body {
+			let reverse_create = signal
         .args()
         .iter()
         .enumerate()
@@ -511,6 +536,14 @@ fn generate_try_from_event_body(iface: &Interface, signal: &Signal) -> String {
         })
         .collect::<Vec<String>>()
         .join(", ");
+			format!(
+r#"EventBodyOwned {{
+	properties: std::collections::HashMap::new(),
+	{reverse_create}
+}}"#)
+		} else {
+			"EventBodyOwned::default()".to_string()
+		};
     let signal_conversion_lit = signal
         .args()
         .iter()
@@ -538,10 +571,8 @@ fn generate_try_from_event_body(iface: &Interface, signal: &Signal) -> String {
 	crate::events::macros::impl_to_dbus_message!({impl_for_name});
 	crate::events::macros::impl_from_dbus_message!({impl_for_name});
 	impl From<{impl_for_name}> for EventBodyOwned {{
-		fn from(event: {impl_for_name}) -> Self {{
-			EventBodyOwned {{
-				{reverse_signal_conversion_lit}
-			}}
+		fn from({event_var_name}: {impl_for_name}) -> Self {{
+			{to_event_body}
 		}}
 	}}
 	")
@@ -600,8 +631,7 @@ fn generate_match_rule_impl(interface: &Interface, signal: &Signal) -> String {
 	}}*/"
     )
 }
-// TODO
-fn generate_generic_event_impl(signal: &Signal, interface: &Interface) -> String {
+fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_body: bool) -> String {
     let iface_prefix = iface_name(interface);
     let sig_name_event = event_ident(signal.name());
     let member_string = signal.name();
@@ -627,6 +657,11 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface) -> String
         })
         .collect::<Vec<String>>()
         .join(", ");
+		let body_var_name = if is_empty_body {
+			"_"
+		} else {
+			"body"
+		}.to_string();
     format!(
         "	impl GenericEvent<'_> for {sig_name_event} {{
       const DBUS_MEMBER: &'static str = \"{raw_member_name}\";
@@ -636,7 +671,7 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface) -> String
 			
 			type Body = EventBodyOwned;
 
-		fn build(item: Accessible, body: Self::Body) -> Self {{
+		fn build(item: Accessible, {body_var_name}: Self::Body) -> Self {{
 			Self {{
 				item,
 				{signal_conversion_lit}	
@@ -668,7 +703,11 @@ fn generate_mod_from_iface(iface: &Interface) -> String {
         .join("\n");
 		let impls = for_interface_signals(iface, generate_impl_from_signal).join("\n");
     let try_from_atspi = generate_try_from_atspi_event(iface);
-		let from_event_body = for_interface_signals(iface, generate_try_from_event_body).join("\n");
+		let empty_bodies = for_interface_signals(iface, is_empty_body);
+		let from_event_body = std::iter::zip(iface.signals(), empty_bodies.iter())
+			.map(|(signal, empty_body)| generate_try_from_event_body(iface, signal, *empty_body))
+			.collect::<Vec<String>>()
+			.join("\n");
 		let default_impls = std::iter::zip(derive_default.iter(), iface.signals())
         .filter_map(|(derive, signal)| if !derive {
 					Some(generate_default_for_signal(iface, signal))
@@ -788,7 +827,7 @@ fn generate_enum_from_iface(iface: &Interface) -> String {
 		let interface_name = iface.name();
     let example = generate_enum_associated_example(&mod_name, &sig_name_event, signal.name(), interface_name, &name_ident);
     let name_ident_plural = events_ident(name_ident);
-    let signal_quotes = for_signal_interfaces(iface, generate_variant_from_signal).join("");
+    let signal_quotes = for_interface_signals(iface, generate_variant_from_signal).join("");
     format!(
         "
     {example}
