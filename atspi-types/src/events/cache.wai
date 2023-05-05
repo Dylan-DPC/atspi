@@ -1,0 +1,11 @@
+use * from types
+variant cache-events {
+	add-accessible(add-accessible-event),
+	remove-accessible(remove-accessible-event),
+}
+record add-accessible-event {
+	item: accessible,
+	node-added: tuple<string, string>}
+record remove-accessible-event {
+	item: accessible,
+	node-removed: tuple<string, string>}

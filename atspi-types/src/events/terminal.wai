@@ -1,0 +1,23 @@
+use * from types
+variant terminal-events {
+	line-changed(line-changed-event),
+	columncount-changed(columncount-changed-event),
+	linecount-changed(linecount-changed-event),
+	application-changed(application-changed-event),
+	charwidth-changed(charwidth-changed-event),
+}
+record line-changed-event {
+	item: accessible,
+}
+record columncount-changed-event {
+	item: accessible,
+}
+record linecount-changed-event {
+	item: accessible,
+}
+record application-changed-event {
+	item: accessible,
+}
+record charwidth-changed-event {
+	item: accessible,
+}

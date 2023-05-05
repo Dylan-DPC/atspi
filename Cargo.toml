@@ -11,5 +11,5 @@ atspi-types = { path = "./atspi-types" }
 atspi-macros = { path = "./atspi-macros" }
 serde = "1.0"
 zbus = "3.12"
-zbus_names = "3.12"
+zbus_names = "2.5.0"
 zvariant = "3.12"

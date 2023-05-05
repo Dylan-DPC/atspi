@@ -1,0 +1,8 @@
+use * from types
+variant keyboard-events {
+	modifiers(modifiers-event),
+}
+record modifiers-event {
+	item: accessible,
+	previous-modifiers: s32,
+	current-modifiers: s32}

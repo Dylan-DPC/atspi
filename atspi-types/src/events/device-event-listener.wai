@@ -1,0 +1,11 @@
+use * from types
+variant device-event-listener-events {
+	keystroke-listener-registered(keystroke-listener-registered-event),
+	keystroke-listener-deregistered(keystroke-listener-deregistered-event),
+}
+record keystroke-listener-registered-event {
+	item: accessible,
+	listener: tuple<string, string, u32, u32, list<tuple<s32, s32, string, s32>>>}
+record keystroke-listener-deregistered-event {
+	item: accessible,
+	listener: tuple<string, string, u32, u32, list<tuple<s32, s32, string, s32>>>}

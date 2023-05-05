@@ -1,0 +1,7 @@
+use * from types
+variant focus-events {
+	focus(focus-event),
+}
+record focus-event {
+	item: accessible,
+}

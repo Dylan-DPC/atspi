@@ -1,0 +1,27 @@
+use * from types
+variant document-events {
+	load-complete(load-complete-event),
+	reload(reload-event),
+	load-stopped(load-stopped-event),
+	content-changed(content-changed-event),
+	attributes-changed(attributes-changed-event),
+	page-changed(page-changed-event),
+}
+record load-complete-event {
+	item: accessible,
+}
+record reload-event {
+	item: accessible,
+}
+record load-stopped-event {
+	item: accessible,
+}
+record content-changed-event {
+	item: accessible,
+}
+record attributes-changed-event {
+	item: accessible,
+}
+record page-changed-event {
+	item: accessible,
+}

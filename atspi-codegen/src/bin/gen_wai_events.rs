@@ -1,4 +1,7 @@
 use std::{
+		fs::File,
+		io::prelude,
+		io::Write,
     vec,
 };
 
@@ -36,8 +39,29 @@ pub fn iface_name(interface: &Interface) -> String {
 pub fn generate_wai_flag(iface: &Interface, signal: &Signal) -> String {
 	format!("\t{}-{},", iface_name(iface).to_case(Case::Kebab), signal.name().to_case(Case::Kebab))
 }
+pub fn member_conv_wai(signal: &Signal) -> String {
+	signal.name()
+		.replace("uU", "UU")
+		.replace("count", "Count")
+		.replace("width", "Width")
+    .replace("AddAccessible", "Add")
+    .replace("RemoveAccessible", "Remove")
+		.to_case(Case::Kebab)
+}
+pub fn member_conv_rust(signal: &Signal) -> String {
+	signal.name()
+		.replace("uU", "UU")
+		.replace("count", "Count")
+		.replace("width", "Width")
+    .replace("AddAccessible", "Add")
+    .replace("RemoveAccessible", "Remove")
+		.to_case(Case::UpperCamel)
+}
 pub fn struct_name(iface: &Interface, signal: &Signal) -> String {
-	format!("{}-{}-{}", iface_name(iface).to_lowercase(), signal.name().to_case(Case::Kebab), "event")
+	format!("{}-{}-{}", iface_name(iface).to_case(Case::Kebab), member_conv_wai(signal), "event")
+}
+pub fn rust_struct_name(iface: &Interface, signal: &Signal) -> String {
+	format!("{}{}", member_conv_rust(signal), "Event")
 }
 
 pub fn  get_root_node_from_xml(file_name: &str) -> Node {
@@ -62,7 +86,7 @@ pub fn event_enum_variant(iface: &Interface) -> String {
 }
 
 pub fn enum_variant(iface: &Interface, signal: &Signal) -> String {
-		format!("\t{}({}),", signal.name().to_case(Case::Kebab), struct_name(iface, signal))
+		format!("\t{}({}),", member_conv_wai(signal), struct_name(iface, signal))
 }
 
 pub fn enum_container(iface: &Interface) -> String {
@@ -201,12 +225,65 @@ pub fn generate_structs(iface: &Interface, signal: &Signal) -> String {
 		.join(",\n");
 	format!("record {} {{\n\titem: accessible,\n{}}}", struct_name(iface, signal), tys)
 }
+pub fn generate_rust_types(iface: &Interface, signal: &Signal) -> String {
+	format!("pub use super::{} as {};", struct_name(iface, signal).to_case(Case::UpperCamel), rust_struct_name(iface, signal).to_case(Case::UpperCamel))
+}
 
 pub fn structs(nodes: &[Node]) -> String {
 	nodes.iter()
 		.map(|node| for_signals(node, generate_structs))
 		.collect::<Vec<String>>()
 		.join("\n")
+}
+
+pub fn event_file(iface: &Interface) -> String {
+	iface_name(iface).to_case(Case::Kebab)
+}
+
+pub fn imports_for(iface: &Interface) -> String {
+	format!("{}Events", iface_name(iface)).to_case(Case::Kebab)
+}
+
+pub fn write_wai_interfaces(nodes: &[Node]) -> Result<()> {
+	let all_ifaces = nodes.iter()
+		.map(|node| node.interfaces().iter().map(|iface| iface.to_owned().to_owned()).collect::<Vec<Interface>>())
+		.flatten()
+		.collect::<Vec<Interface>>();
+	let mut content = String::new();
+	content.push_str("use * from types\n");
+	for iface in &all_ifaces {
+		content.push_str(&enum_container(iface));
+		content.push_str("\n");
+		content.push_str(&for_interface_signals(iface, generate_structs).join("\n"));
+		content.push_str("\n");
+	}
+	let mut file = File::create("./atspi-types/src/events/events.wai").expect("Could not open events.wai");
+	content.push_str(&event_enum(nodes));
+	content.push_str("todo-replace-makes-it-work: func(ev: event)\n");
+	file.write_all(content.as_bytes()).expect("Could not write to event.wai file");
+	Ok(())
+}
+pub fn write_rust_interfaces(nodes: &[Node]) -> Result<()> {
+	let all_ifaces = nodes.iter()
+		.map(|node| node.interfaces().iter().map(|iface| iface.to_owned().to_owned()).collect::<Vec<Interface>>())
+		.flatten()
+		.collect::<Vec<Interface>>();
+	let mut content = String::new();
+	content.push_str("use wai_bindgen_rust::*;\n");
+	content.push_str("import!(\"./src/events/events.wai\");\n");
+	content.push_str("pub use events::*;\n");
+	for iface in &all_ifaces {
+		let mod_name = iface_name(iface).to_case(Case::Snake);
+		let enum_name = format!("{}Events", iface_name(iface)).to_case(Case::UpperCamel);
+		content.push_str(&format!("pub mod {} {{\n", mod_name));
+		content.push_str(&format!("pub use super::{};", enum_name));
+		content.push_str(&for_interface_signals(iface, generate_rust_types).join("\n"));
+		content.push_str("\n}\n");
+	}
+	content.push_str("pub use events::Event;\n");
+	let mut file = File::create("./atspi-types/src/events/mod.rs").expect("Could not open events/mod.rs");
+	file.write_all(content.as_bytes()).expect("Could not write to events/mod.rs file");
+	Ok(())
 }
 
 pub fn main() {
@@ -217,9 +294,6 @@ pub fn main() {
 			get_root_node_from_xml("/home/tait/Documents/atspi/xml/Socket.xml"),
 			get_root_node_from_xml("/home/tait/Documents/atspi/xml/DeviceEventListener.xml"),
 		];
-		println!("use * from initial-types");
-		println!("{}", structs(&nodes));
-		println!("{}", event_type_flags(&nodes));
-		println!("{}", enum_containers(&nodes));
-		println!("{}", event_enum(&nodes));
+		write_wai_interfaces(&nodes);
+		write_rust_interfaces(&nodes);
 }

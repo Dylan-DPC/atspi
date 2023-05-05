@@ -1,0 +1,459 @@
+flags state {
+	/// indicates an invalid state - probably an error condition.
+	invalid,
+	/// indicates a window is currently the active window, or
+	/// an object is the active subelement within a container or table.
+	///
+	/// `active` should not be used for objects which have
+	/// [`state::focusable`] or [`state::selectable`]: those objects should use
+	/// [`state::focused`] and [`state::selected`] respectively.
+	///
+	/// `active` is a means to indicate that an object which is not
+	/// focusable and not selectable is the currently-active item within its
+	/// parent container.
+	active,
+	/// indicates that the object is armed.
+	armed,
+	/// indicates the current object is busy, i.e. onscreen
+	/// representation is in the process of changing, or       the object is
+	/// temporarily unavailable for interaction due to activity already in progress.
+	busy,
+	/// indicates this object is currently checked.
+	checked,
+	/// indicates this object is collapsed.
+	collapsed,
+	/// indicates that this object no longer has a valid
+	/// backing widget        (for instance, if its peer object has been destroyed).
+	defunct,
+	/// indicates the user can change the contents of this object.
+	editable,
+	/// indicates that this object is enabled, i.e. that it
+	/// currently reflects some application state. -objects that are "greyed out"
+	/// may lack this state, and may lack the [`-state::-sensitive`] if direct
+	/// user interaction cannot cause them to acquire `-enabled`.
+	///
+	/// see [`state::sensitive`].
+	enabled,
+	/// indicates this object allows progressive
+	/// disclosure of its children.
+	expandable,
+	/// indicates this object is expanded.
+	expanded,
+	/// indicates this object can accept keyboard focus,
+	/// which means all events resulting from typing on the keyboard will
+	/// normally be passed to it when it has focus.
+	focusable,
+	/// indicates this object currently has the keyboard focus.
+	focused,
+	/// indicates that the object has an associated tooltip.
+	has-tooltip,
+	/// indicates the orientation of this object is horizontal.
+	horizontal,
+	/// indicates this object is minimized and is
+	/// represented only by an icon.
+	iconified,
+	/// indicates something must be done with this object
+	/// before the user can interact with an object in a different window.
+	modal,
+	/// indicates this (text) object can contain multiple
+	/// lines of text.
+	multi-line,
+	/// indicates this object allows more than one of
+	/// its children to be selected at the same time, or in the case of text
+	/// objects, that the object supports non-contiguous text selections.
+	multiselectable,
+	/// indicates this object paints every pixel within its
+	/// rectangular region. it also indicates an alpha value of unity, if it
+	/// supports alpha blending.
+	opaque,
+	/// indicates this object is currently pressed.
+	pressed,
+	/// indicates the size of this object's size is not fixed.
+	resizable,
+	/// indicates this object is the child of an object
+	/// that allows its children to be selected and that this child is one of
+	/// those children       that can be selected.
+	selectable,
+	/// indicates this object is the child of an object that
+	/// allows its children to be selected and that this child is one of those
+	/// children that has been selected.
+	selected,
+	/// indicates this object is sensitive, e.g. to user
+	/// interaction. `sensitive` usually accompanies.
+	/// [`state::enabled`] for user-actionable controls, but may be found in the
+	/// absence of [`state::enabled`] if the current visible state of the control
+	/// is "disconnected" from the application state.  in such cases, direct user
+	/// interaction can often result in the object gaining `sensitive`,
+	/// for instance if a user makes an explicit selection using an object whose
+	/// current state is ambiguous or undefined.
+	///
+	/// see [`state::enabled`], [`state::indeterminate`].
+	sensitive,
+	/// indicates this object, the object's parent, the
+	/// object's parent's parent, and so on, are all 'shown' to the end-user,
+	/// i.e. subject to "exposure" if blocking or obscuring objects do not
+	/// interpose between this object and the top of the window stack.
+	showing,
+	/// indicates this (text) object can contain only a
+	/// single line of text.
+	single-line,
+	/// indicates that the information returned for this object
+	/// may no longer be synchronized with the application state.  this can occur
+	/// if the object has [`state::transient`], and can also occur towards the
+	/// end of the object peer's lifecycle.
+	stale,
+	/// indicates this object is transient.
+	transient,
+	/// indicates the orientation of this object is vertical;
+	/// for example this state may appear on such objects as scrollbars, text
+	/// objects (with vertical text flow), separators, etc.
+	vertical,
+	/// indicates this object is visible, e.g. has been
+	/// explicitly marked for exposure to the user. `visible` is no
+	/// guarantee that the object is actually unobscured on the screen, only that
+	/// it is 'potentially' visible, barring obstruction, being scrolled or clipped
+	/// out of the field of view, or having an ancestor container that has not yet
+	/// made visible. a widget is potentially onscreen if it has both
+	/// `visible` and [`state::showing`]. the absence of
+	/// `visible` and [`state::showing`] is
+	/// semantically equivalent to saying that an object is 'hidden'.
+	visible,
+	/// indicates that "active-descendant-changed"
+	/// event is sent when children become 'active' (i.e. are selected or
+	/// navigated to onscreen).  used to prevent need to enumerate all children
+	/// in very large containers, like tables. the presence of
+	/// `manages-descendants` is an indication to the client that the
+	/// children should not, and need not, be enumerated by the client.
+	/// objects implementing this state are expected to provide relevant state      
+	/// notifications to listening clients, for instance notifications of
+	/// visibility changes and activation of their contained child objects, without
+	/// the client having previously requested references to those children.
+	manages-descendants,
+	/// indicates that a check box or other boolean
+	/// indicator is in a state other than checked or not checked.
+	///
+	/// this usually means that the boolean value reflected or controlled by the
+	/// object does not apply consistently to the entire current context.      
+	/// for example, a checkbox for the "bold" attribute of text may have
+	/// `indeterminate` if the currently selected text contains a mixture
+	/// of weight attributes. in many cases interacting with a
+	/// `indeterminate` object will cause the context's corresponding
+	/// boolean attribute to be homogenized, whereupon the object will lose
+	/// `indeterminate` and a corresponding state-changed event will be
+	/// fired.
+	indeterminate,
+	/// indicates that user interaction with this object is
+	/// 'required' from the user, for instance before completing the
+	/// processing of a form.
+	required,
+	/// indicates that an object's onscreen content
+	/// is truncated, e.g. a text value in a spreadsheet cell.
+	truncated,
+	/// indicates this object's visual representation is
+	/// dynamic, not static. this state may be applied to an object during an
+	/// animated 'effect' and be removed from the object once its visual
+	/// representation becomes static. some applications, notably content viewers,
+	/// may not be able to detect all kinds of animated content.  therefore the
+	/// absence of this state should not be taken as
+	/// definitive evidence that the object's visual representation is      
+	/// static; this state is advisory.
+	animated,
+	/// this object has indicated an error condition
+	/// due to failure of input validation.  for instance, a form control may
+	/// acquire this state in response to invalid or malformed user input.
+	invalid-entry,
+	/// this state indicates that the object
+	/// in question implements some form of typeahead or       
+	/// pre-selection behavior whereby entering the first character of one or more
+	/// sub-elements causes those elements to scroll into view or become
+	/// selected. subsequent character input may narrow the selection further as
+	/// long as one or more sub-elements match the string. -this state is normally
+	/// only useful and encountered on objects that implement [`crate::selection::selection-proxy`].
+	/// in some cases the typeahead behavior may result in full or partial
+	/// completion of the data in the input field, in which case
+	/// these input events may trigger text-changed events from the source.
+	supports-autocompletion,
+	/// indicates that the object in
+	/// question supports text selection. it should only be exposed on objects
+	/// which implement the [`crate::text::text-proxy`] interface, in order to distinguish this state
+	/// from [`state::-selectable`], which infers that the object in question is a
+	/// selectable child of an object which implements [`crate::selection::selection-proxy`]. while
+	/// similar, text selection and subelement selection are distinct operations.
+	selectable-text,
+	/// indicates that the object in question is
+	/// the 'default' interaction object in a dialog, i.e. the one that gets
+	/// activated if the user presses "enter" when the dialog is initially
+	/// posted.
+	is-default,
+	/// indicates that the object (typically a
+	/// hyperlink) has already been activated or invoked, with the result that
+	/// some backing data has been downloaded or rendered.
+	visited,
+	/// indicates this object has the potential to
+	/// be checked, such as a checkbox or toggle-able table cell.
+	checkable,
+	/// indicates that the object has a popup
+	/// context menu or sub-level menu which may or may not be
+	/// showing. this means that activation renders conditional content.
+	/// note that ordinary tooltips are not considered popups in this
+	/// context.
+	has-popup,
+	/// indicates that an object which is [`state::enabled`] and
+	/// [`state::sensitive`] has a value which can be read, but not modified, by the
+	/// user.
+	read-only,
+}
+flags iface {
+	accessible,
+	action,
+	application,
+	cache,
+	collection,
+	component,
+	document,
+	device-event-controller,
+	device-event-listener,
+	editable-text,
+	hyperlink,
+	hypertext,
+	image,
+	registry,
+	selection,
+	socket,
+	table,
+	table-cell,
+	text,
+	value,
+}
+enum role {
+	/// An invalid role used for either an invalid deserialization, or when trying to match for any possible role. TODO: confirm
+	invalid,
+	/// Unknown role TODO
+	accelerator-label,
+	/// Alert: this is triggered in a web browser through the alert(...); function.
+	alert,
+	/// Animation: unknown use TODO
+	animation,
+	/// Arrow: unknown use TODO
+	arrow,
+	/// Calendar: a calendar widget, or in HTML terms, `<input type="datetime-local">`
+	calendar,
+	/// A canvas on which any direct rendering may be called. In web terms, this would be the `<canvas>` element.
+	canvas,
+	/// A (multiple) checkbox. In HTML terms, `<input type="checkbox">`, note that there is a different role for radio buttons and for multiple select dropdowns.
+	check-box,
+	/// CheckMenuItem: unknown use. TODO
+	check-menu-item,
+	/// ColorChooser: a color picker input. In HTML terms, `<input type="color">`
+	color-chooser,
+	/// Column header: in HTML terms, a `<th>`.
+	column-header,
+	/// A multiple select dropdown menu.
+	combo-box,
+	/// Date editor: unknown use case. TODO
+	date-editor,
+	/// A desktop icon: on Windows this would be the "Recycle Bin", or "My Computer" on your desktop. On Linux this would be similar to any applications showing on your desktop.
+	desktop-icon,
+	/// The frame within all windows live. A DesktopFrame will generally share siblings with others of the same type if you use multiple desktops.
+	desktop-frame,
+	/// Dial: unknown use case. TODO
+	dial,
+	/// Dialog: a pop-up dialog. In HTML terms, the `<dialog>` tag.
+	dialog,
+	/// Directory pane: unknown use case.
+	directory-pane,
+	drawing-area,
+	/// File chooser: this is a window which will display when
+	file-chooser,
+	/// Filter: unknown use: TODO.
+	filler,
+	/// Focus traversable: TODO
+	focus-traversable,
+	/// Font chooser: TODO, but obvious?
+	font-chooser,
+	/// Frame: generally the parent of InternalFrame.
+	frame,
+	/// Glass pane? TODO
+	glass-pane,
+	/// Constraining container of which only HTML resides in. This is useful during structural navigation calls to bound the search area to only HTML elements of the page.
+	html-container,
+	icon,
+	/// An image. In HTML, this would be the <img> tag, or it could be an image embedded within a non-web application.
+	image,
+	/// Internal frame: this is the constraining role for a graphical window. This is a good bounding role for finding things from within an application.
+	internal-frame,
+	/// A label, which is generally associated with an item with a different role. In HTML terms, this would be a `<label for="X">` being attached to whatever `<Y id="X">` is.
+	label,
+	/// Layered pane? TODO
+	layered-pane,
+	/// List: a list with [`Self::ListItem`] contained within it. In HTML, this would be the same as the `<ul>` or `<ol>` elements.
+	/// TODO: rename to `list`
+	list-of-elements,
+	/// ListItem: a list's item. This would be the same as an `<li>` in HTML terms.
+	list-item,
+	menu,
+	menu-bar,
+	menu-item,
+	option-pane,
+	page-tab,
+	page-tab-list,
+	panel,
+	/// A password input, like `<input type="password">`.
+	password-text,
+	popup-menu,
+	/// Progress bar: this indicates progress of some process, and generally is indicated by successively higher-pitched beeps on a screen reader as it is updated to a more and more highly completed state. In HTML this would be the same as `<progress>` tag.
+	progress-bar,
+	/// PushButton: this is what everybody else calls a button. In HTML, `<button>`
+	push-button,
+	/// Radio button: a multiple-choice, single-selection option. In HTML: `<input type="radio">`.
+	radio-button,
+	radio-menu-item,
+	/// Root pane: the mother of *ALL* panes. This is the pane from which all other panes descend. If you wanted to, for some reason, search within a bound of the entire active desktop, this would be your bounding pane.
+	root-pane,
+	/// Row header: a heading to a row. In HTML this would be the same as `<th role="rowheader">` without the additional role="..." attribute, the header will still be recognized as a column header.
+	row-header,
+	/// A scroll bar itself: the item you may click on and scroll up and down.
+	scroll-bar,
+	/// A scroll pane: the pane in which the scrollable content is contained within.
+	scroll-pane,
+	/// Separator: commonly used in desktop applications to pad out the interface. This also is the same as the `<hr>` element in HTML.
+	separator,
+	/// Slider: a slider to control a granular value like volume, pitch, or speed.
+	slider,
+	/// spin button: ? TODO
+	spin-button,
+	/// Split pane: ? TODO
+	split-pane,
+	/// Status bar: ? TODO
+	status-bar,
+	/// Table: a table. This may hold any tabular data with rows and columns. This would be the same as the `<table>` element in HTML.
+	table,
+	/// A table cell: this may hold a singular piece of data at a row+column combo. This is the same as `<td>` in HTML.
+	table-cell,
+	/// The column header of a table, represented in HTML as a `<th>`
+	table-column-header,
+	/// The row heading of a table, represented in HTML as a `<th scope="row">`.
+	table-row-header,
+	tearoff-menu-item,
+	/// A virtual terminal like MATE Terminal, Foot, or `st`.
+	terminal,
+	text,
+	toggle-button,
+	tool-bar,
+	tool-tip,
+	/// The root of a tree, which may have many sub trees and tree items (leafs).
+	tree,
+	tree-table,
+	/// When the role cannot be accurately reported, this role will be set.
+	unknown,
+	viewport,
+	/// A window itself, not the same thing as a Pane or a Frame, which are both contained within a
+	/// Window.
+	window,
+	extended,
+	/// A header with upfront information about a document, site, or application. The same as `<header>` in HTML.
+	header,
+	/// A footer with additional (usually optional) information about a web page, document, or application. The same as `<footer>` in HTML.
+	footer,
+	/// A paragraph of text: the same as `<p>` in HTML.
+	paragraph,
+	/// A horizontal line between two items. Usually a `<hr>` in HTML.
+	ruler,
+	application,
+	autocomplete,
+	editbar,
+	embedded,
+	entry,
+	chart,
+	caption,
+	document-frame,
+	/// Heading: this is a heading with a level (usually 1-6). This is represented by `<h1>` through `<h6>` in HTML.
+	heading,
+	page,
+	/// Section: pieces of grouped content for semantic purposes. This is the same as the `<section>` tag in HTML.
+	section,
+	redundant-object,
+	/// Form: a form where a user will input information and send the form out (usually to an online service). The same as the `<form>` element in HTML.
+	form,
+	/// Link: a hyperlink that leads to a new destination. The same as the `<a>` tag in HTML.
+	link,
+	input-method-window,
+	/// Table row: a row of table data. This is the same as the `<tr>` tag from HTML.
+	table-row,
+	/// A leaf or node within a tree.
+	tree-item,
+	/// A spreadsheet document (almost exclusively used by LibreofficeCalc).
+	document-spreadsheet,
+	/// A presentation document (almost exclusively used by LibreofficePresent).
+	document-presentation,
+	/// A text document (almost exclusively used by LibreofficeWriter).
+	document-text,
+	/// A web document, used for any web browser.
+	document-web,
+	/// An email document, used primarily by Thunderbird.
+	document-email,
+	comment,
+	list-box,
+	grouping,
+	image-map,
+	/// Notification: this is generally displayed and made accessible by a notification daemon. For example `dunst`.
+	notification,
+	info-bar,
+	level-bar,
+	title-bar,
+	/// Block quote: when a quote is longer than around one full sentence, a block-style quote often make more sense. This is the same as the `<blockquote>` HTML tag.
+	block-quote,
+	/// Audio: a role which can play sound. In HTML: `<audio>`
+	audio,
+	/// Video: a role which can play a video (with optional sound). In HTML: `<video>`
+	video,
+	definition,
+	article,
+	landmark,
+	log,
+	marquee,
+	/// Math: a special role for when math equations appear. This is the same as the `<math>` tag in HTML, indicating embedded MathML.
+	math,
+	/// A rating system, generally out of five stars, but it does not need to be that way. There is no tag nor role for this in HTML, however.
+	rating,
+	timer,
+	/// TODO: rename to static
+	static-element,
+	math-fraction,
+	math-root,
+	subscript,
+	superscript,
+	/// A list with Term/Value subitems. This is the same as `<dl>` in HTML.
+	description-list,
+	/// An item (usually inside a [`Self::DescriptionList`]) that has a term as its content.
+	/// The same as the `<dt>` tag in HTML.
+	description-term,
+	/// An item (usually inside a [`Self::DescriptionList`]) that has a term's value as its
+	/// content. This is the same as a `<dd>` tag in HTML.
+	description-value,
+	footnote,
+	content-deletion,
+	content-insertion,
+	mark,
+	suggestion,
+	push-button-menu,
+}
+
+record cache-item {
+  object: accessible,
+  app: accessible,
+  parent: accessible,
+  index: s32,
+  children: s32,
+  ifaces: iface,
+  short-name: string,
+  role: role,
+  name: string,
+  states: state
+}
+
+record accessible {
+  name: string,
+  path: string,
+}
+

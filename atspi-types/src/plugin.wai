@@ -1,0 +1,2 @@
+use { event } from events
+event-pre: func(ev: event) -> bool

@@ -1,0 +1,306 @@
+use * from types
+variant object-events {
+	property-change(object-property-change-event),
+	bounds-changed(object-bounds-changed-event),
+	link-selected(object-link-selected-event),
+	state-changed(object-state-changed-event),
+	children-changed(object-children-changed-event),
+	visible-data-changed(object-visible-data-changed-event),
+	selection-changed(object-selection-changed-event),
+	model-changed(object-model-changed-event),
+	active-descendant-changed(object-active-descendant-changed-event),
+	announcement(object-announcement-event),
+	attributes-changed(object-attributes-changed-event),
+	row-inserted(object-row-inserted-event),
+	row-reordered(object-row-reordered-event),
+	row-deleted(object-row-deleted-event),
+	column-inserted(object-column-inserted-event),
+	column-reordered(object-column-reordered-event),
+	column-deleted(object-column-deleted-event),
+	text-bounds-changed(object-text-bounds-changed-event),
+	text-selection-changed(object-text-selection-changed-event),
+	text-changed(object-text-changed-event),
+	text-attributes-changed(object-text-attributes-changed-event),
+	text-caret-moved(object-text-caret-moved-event),
+}
+record object-property-change-event {
+	item: accessible,
+	property: string,
+	value: string}
+record object-bounds-changed-event {
+	item: accessible,
+}
+record object-link-selected-event {
+	item: accessible,
+}
+record object-state-changed-event {
+	item: accessible,
+	state: string,
+	enabled: s32}
+record object-children-changed-event {
+	item: accessible,
+	operation: string,
+	index-in-parent: s32,
+	child: accessible}
+record object-visible-data-changed-event {
+	item: accessible,
+}
+record object-selection-changed-event {
+	item: accessible,
+}
+record object-model-changed-event {
+	item: accessible,
+}
+record object-active-descendant-changed-event {
+	item: accessible,
+	child: accessible}
+record object-announcement-event {
+	item: accessible,
+	text: string}
+record object-attributes-changed-event {
+	item: accessible,
+}
+record object-row-inserted-event {
+	item: accessible,
+}
+record object-row-reordered-event {
+	item: accessible,
+}
+record object-row-deleted-event {
+	item: accessible,
+}
+record object-column-inserted-event {
+	item: accessible,
+}
+record object-column-reordered-event {
+	item: accessible,
+}
+record object-column-deleted-event {
+	item: accessible,
+}
+record object-text-bounds-changed-event {
+	item: accessible,
+}
+record object-text-selection-changed-event {
+	item: accessible,
+}
+record object-text-changed-event {
+	item: accessible,
+	detail: string,
+	start-pos: s32,
+	length: s32,
+	text: string}
+record object-text-attributes-changed-event {
+	item: accessible,
+}
+record object-text-caret-moved-event {
+	item: accessible,
+	position: s32}
+variant window-events {
+	property-change(window-property-change-event),
+	minimize(window-minimize-event),
+	maximize(window-maximize-event),
+	restore(window-restore-event),
+	close(window-close-event),
+	create(window-create-event),
+	reparent(window-reparent-event),
+	desktop-create(window-desktop-create-event),
+	desktop-destroy(window-desktop-destroy-event),
+	destroy(window-destroy-event),
+	activate(window-activate-event),
+	deactivate(window-deactivate-event),
+	raise(window-raise-event),
+	lower(window-lower-event),
+	move(window-move-event),
+	resize(window-resize-event),
+	shade(window-shade-event),
+	u-ushade(window-u-ushade-event),
+	restyle(window-restyle-event),
+}
+record window-property-change-event {
+	item: accessible,
+	property: string}
+record window-minimize-event {
+	item: accessible,
+}
+record window-maximize-event {
+	item: accessible,
+}
+record window-restore-event {
+	item: accessible,
+}
+record window-close-event {
+	item: accessible,
+}
+record window-create-event {
+	item: accessible,
+}
+record window-reparent-event {
+	item: accessible,
+}
+record window-desktop-create-event {
+	item: accessible,
+}
+record window-desktop-destroy-event {
+	item: accessible,
+}
+record window-destroy-event {
+	item: accessible,
+}
+record window-activate-event {
+	item: accessible,
+}
+record window-deactivate-event {
+	item: accessible,
+}
+record window-raise-event {
+	item: accessible,
+}
+record window-lower-event {
+	item: accessible,
+}
+record window-move-event {
+	item: accessible,
+}
+record window-resize-event {
+	item: accessible,
+}
+record window-shade-event {
+	item: accessible,
+}
+record window-u-ushade-event {
+	item: accessible,
+}
+record window-restyle-event {
+	item: accessible,
+}
+variant mouse-events {
+	abs(mouse-abs-event),
+	rel(mouse-rel-event),
+	button(mouse-button-event),
+}
+record mouse-abs-event {
+	item: accessible,
+	x: s32,
+	y: s32}
+record mouse-rel-event {
+	item: accessible,
+	x: s32,
+	y: s32}
+record mouse-button-event {
+	item: accessible,
+	detail: string,
+	mouse-x: s32,
+	mouse-y: s32}
+variant keyboard-events {
+	modifiers(keyboard-modifiers-event),
+}
+record keyboard-modifiers-event {
+	item: accessible,
+	previous-modifiers: s32,
+	current-modifiers: s32}
+variant terminal-events {
+	line-changed(terminal-line-changed-event),
+	column-count-changed(terminal-column-count-changed-event),
+	line-count-changed(terminal-line-count-changed-event),
+	application-changed(terminal-application-changed-event),
+	char-width-changed(terminal-char-width-changed-event),
+}
+record terminal-line-changed-event {
+	item: accessible,
+}
+record terminal-column-count-changed-event {
+	item: accessible,
+}
+record terminal-line-count-changed-event {
+	item: accessible,
+}
+record terminal-application-changed-event {
+	item: accessible,
+}
+record terminal-char-width-changed-event {
+	item: accessible,
+}
+variant document-events {
+	load-complete(document-load-complete-event),
+	reload(document-reload-event),
+	load-stopped(document-load-stopped-event),
+	content-changed(document-content-changed-event),
+	attributes-changed(document-attributes-changed-event),
+	page-changed(document-page-changed-event),
+}
+record document-load-complete-event {
+	item: accessible,
+}
+record document-reload-event {
+	item: accessible,
+}
+record document-load-stopped-event {
+	item: accessible,
+}
+record document-content-changed-event {
+	item: accessible,
+}
+record document-attributes-changed-event {
+	item: accessible,
+}
+record document-page-changed-event {
+	item: accessible,
+}
+variant focus-events {
+	focus(focus-focus-event),
+}
+record focus-focus-event {
+	item: accessible,
+}
+variant cache-events {
+	add(cache-add-event),
+	remove(cache-remove-event),
+}
+record cache-add-event {
+	item: accessible,
+	node-added: tuple<string, string>}
+record cache-remove-event {
+	item: accessible,
+	node-removed: tuple<string, string>}
+variant registry-events {
+	event-listener-registered(registry-event-listener-registered-event),
+	event-listener-deregistered(registry-event-listener-deregistered-event),
+}
+record registry-event-listener-registered-event {
+	item: accessible,
+	bus: string,
+	path: string}
+record registry-event-listener-deregistered-event {
+	item: accessible,
+	bus: string,
+	path: string}
+variant socket-events {
+	available(socket-available-event),
+}
+record socket-available-event {
+	item: accessible,
+	socket: tuple<string, string>}
+variant device-event-listener-events {
+	keystroke-listener-registered(device-event-listener-keystroke-listener-registered-event),
+	keystroke-listener-deregistered(device-event-listener-keystroke-listener-deregistered-event),
+}
+record device-event-listener-keystroke-listener-registered-event {
+	item: accessible,
+	listener: tuple<string, string, u32, u32, list<tuple<s32, s32, string, s32>>>}
+record device-event-listener-keystroke-listener-deregistered-event {
+	item: accessible,
+	listener: tuple<string, string, u32, u32, list<tuple<s32, s32, string, s32>>>}
+variant event {
+	object(object-events),
+	window(window-events),
+	mouse(mouse-events),
+	keyboard(keyboard-events),
+	terminal(terminal-events),
+	document(document-events),
+	focus(focus-events),
+	cache(cache-events),
+	registry(registry-events),
+	socket(socket-events),
+	device-event-listener(device-event-listener-events),
+}todo-replace-makes-it-work: func(ev: event)

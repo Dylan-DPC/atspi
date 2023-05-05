@@ -1,0 +1,13 @@
+use * from types
+variant registry-events {
+	event-listener-registered(event-listener-registered-event),
+	event-listener-deregistered(event-listener-deregistered-event),
+}
+record event-listener-registered-event {
+	item: accessible,
+	bus: string,
+	path: string}
+record event-listener-deregistered-event {
+	item: accessible,
+	bus: string,
+	path: string}

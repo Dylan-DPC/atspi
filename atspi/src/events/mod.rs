@@ -120,6 +120,7 @@ impl From<EventBodyQT> for EventBodyOwned {
 /// Encapsulates the various different accessibility bus signal types.
 ///
 /// Assumes being non exhaustive to allow for future- or custom signals.
+#[repr(C)]
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub enum Event {
@@ -140,6 +141,7 @@ pub enum Event {
 	Listener(EventListenerEvents),
 }
 
+#[repr(C)]
 #[derive(Debug, Clone)]
 #[allow(clippy::module_name_repetitions)]
 pub enum CacheEvents {
@@ -147,6 +149,7 @@ pub enum CacheEvents {
 	Remove(RemoveAccessibleEvent),
 }
 
+#[repr(C)]
 /// Type that contains the `zbus::Message` for meta information and
 /// the [`crate::cache::CacheItem`]
 #[derive(Debug, Clone)]
@@ -186,6 +189,7 @@ impl<'a, T: GenericEvent<'a>> HasRegistryEventString for T {
 impl_from_dbus_message!(AddAccessibleEvent);
 impl_to_dbus_message!(AddAccessibleEvent);
 
+#[repr(C)]
 #[derive(Debug, Clone)]
 pub struct RemoveAccessibleEvent {
 	pub item: Accessible,
@@ -222,6 +226,7 @@ impl_to_dbus_message!(RemoveAccessibleEvent);
 // then rename into Owned for this one.
 /// Owned Accessible type
 /// Emitted by `CacheRemove` and `Available`
+#[repr(C)]
 #[derive(Debug, Clone, Serialize, Deserialize, Type, PartialEq)]
 pub struct Accessible {
 	pub name: OwnedUniqueName,
@@ -313,6 +318,7 @@ impl TryFrom<Message> for EventBodyOwned {
 
 /// Signal type emitted by `EventListenerRegistered` and `EventListenerDeregistered` signals,
 /// which belong to the `Registry` interface, implemented by the registry-daemon.
+#[repr(C)]
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct EventListeners {
 	pub bus_name: OwnedUniqueName,
@@ -325,6 +331,7 @@ fn test_event_listener_signature() {
 }
 
 /// Covers both `EventListener` events.
+#[repr(C)]
 #[derive(Clone, Debug)]
 #[allow(clippy::module_name_repetitions)]
 pub enum EventListenerEvents {
@@ -334,6 +341,7 @@ pub enum EventListenerEvents {
 
 /// An event that is emitted by the regostry daemon to signal that an event has been deregistered
 /// to no longer listen for.
+#[repr(C)]
 #[derive(Clone, Debug)]
 pub struct EventListenerDeregisteredEvent {
 	pub item: Accessible,
@@ -365,6 +373,7 @@ impl_from_dbus_message!(EventListenerDeregisteredEvent);
 impl_to_dbus_message!(EventListenerDeregisteredEvent);
 
 /// An event that is emitted by the regostry daemon to signal that an event has been registered to listen for.
+#[repr(C)]
 #[derive(Clone, Debug)]
 pub struct EventListenerRegisteredEvent {
 	pub item: Accessible,
@@ -396,6 +405,7 @@ impl_from_dbus_message!(EventListenerRegisteredEvent);
 impl_to_dbus_message!(EventListenerRegisteredEvent);
 
 /// An event that is emitted when the registry daemon has started.
+#[repr(C)]
 #[derive(Clone, Debug)]
 pub struct AvailableEvent {
 	pub item: Accessible,

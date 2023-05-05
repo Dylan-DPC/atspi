@@ -121,29 +121,29 @@ fn to_rust_type(ty: &str, input: bool, as_ref: bool) -> String {
             u64::SIGNATURE_CHAR => "u64".into(),
             f64::SIGNATURE_CHAR => "f64".into(),
             // xmlgen accepts 'h' on Windows, only for code generation
-            'h' => (if input { "zbus::zvariant::Fd" } else { "zbus::zvariant::OwnedFd" }).into(),
+            'h' => (if input { "zvariant::Fd" } else { "zvariant::OwnedFd" }).into(),
             <&str>::SIGNATURE_CHAR => "String".into(),
             ObjectPath::SIGNATURE_CHAR => (if input {
                 if as_ref {
-                    "&zbus::zvariant::ObjectPath<'_>"
+                    "&zvariant::ObjectPath<'_>"
                 } else {
-                    "zbus::zvariant::ObjectPath<'_>"
+                    "zvariant::ObjectPath<'_>"
                 }
             } else {
-                "zbus::zvariant::OwnedObjectPath"
+                "zvariant::OwnedObjectPath"
             })
             .into(),
             Signature::SIGNATURE_CHAR => (if input {
                 if as_ref {
-                    "&zbus::zvariant::Signature<'_>"
+                    "&zvariant::Signature<'_>"
                 } else {
-                    "zbus::zvariant::Signature<'_>"
+                    "zvariant::Signature<'_>"
                 }
             } else {
-                "zbus::zvariant::OwnedSignature"
+                "zvariant::OwnedSignature"
             })
             .into(),
-            VARIANT_SIGNATURE_CHAR => "zbus::zvariant::OwnedValue"
+            VARIANT_SIGNATURE_CHAR => "zvariant::OwnedValue"
             .into(),
             ARRAY_SIGNATURE_CHAR => {
                 let c = it.peek().unwrap();
@@ -354,7 +354,7 @@ fn generate_try_from_event_impl(signal: &Signal, interface: &Interface) -> Strin
     let matcher = generate_try_from_event_impl_match_statement(signal, interface);
     format!(
         "#[rustfmt::skip]
-    impl TryFrom<Event> for {sig_name_event} {{
+    impl TryFrom<Event<'_>> for {sig_name_event}<'_> {{
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {{
        {matcher}
@@ -455,9 +455,10 @@ fn generate_struct_from_signal(mod_name: &str, iface: &Interface, signal: &Signa
     format!(
         "
     {example}
+	#[repr(C)]
 	#[derive({derives})]
-	pub struct {sig_name_event} {{
-    pub item: crate::events::Accessible,
+	pub struct {sig_name_event}<'a> {{
+    pub item: crate::accessible::Accessible<'a>,
 {fields}
 }}
 	"
@@ -467,7 +468,7 @@ fn generate_struct_from_signal(mod_name: &str, iface: &Interface, signal: &Signa
 fn generate_variant_from_signal(_iface: &Interface, signal: &Signal) -> String {
     let sig_name = into_rust_enum_str(signal.name());
     let sig_name_event = event_ident(signal.name());
-    format!("		{sig_name}({sig_name_event}),")
+    format!("		{sig_name}({sig_name_event}<'a>),")
 }
 
 fn match_arm_for_signal(iface: &Interface, signal: &Signal) -> String {
@@ -486,12 +487,13 @@ fn generate_try_from_atspi_event(iface: &Interface) -> String {
 		let enum_name = iface_to_enum_name(iface);
 		let member_conversions = for_interface_signals(iface, match_arm_for_signal).join("\n");
     format!("
-	impl From<{impl_for_name}> for Event {{
+	impl From<{impl_for_name}<'_>> for Event<'_> {{
 		fn from(event_enum: {impl_for_name}) -> Self {{
         Event::{enum_name}(event_enum)
 		}}
 	}}
-	impl TryFrom<&zbus::Message> for {impl_for_name} {{
+	#[cfg(feature = \"zbus\")]
+	impl TryFrom<&zbus::Message> for {impl_for_name}<'_> {{
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {{
 			let member = ev.member()
@@ -544,10 +546,10 @@ fn generate_default_for_signal(iface: &Interface, signal: &Signal) -> String {
         .collect::<Vec<String>>()
         .join(", ");
 	format!("
-	impl Default for {impl_for_name} {{
+	impl Default for {impl_for_name}<'_> {{
 		fn default() -> Self {{
 			{impl_for_name} {{
-				item: crate::events::Accessible::default(),
+				item: crate::accessible::Accessible::default(),
 				{default_struct_lit}
 			}}
 		}}
@@ -587,19 +589,21 @@ r#"EventBodyOwned {{
 			"EventBodyOwned::default()".to_string()
 		};
     format!("
-	impl From<{impl_for_name}> for {enum_variant} {{
+	impl From<{impl_for_name}<'_>> for {enum_variant}<'_> {{
 		fn from(specific_event: {impl_for_name}) -> Self {{
 			{enum_variant}::{event_variant}(specific_event)
 		}}
 	}}
-	impl From<{impl_for_name}> for Event {{
+	impl From<{impl_for_name}<'_>> for Event<'_> {{
 		fn from(specific_event: {impl_for_name}) -> Self {{
 			Event::{iface_variant}(specific_event.into())
 		}}
 	}}
-	crate::events::macros::impl_to_dbus_message!({impl_for_name});
-	crate::events::macros::impl_from_dbus_message!({impl_for_name});
-	impl From<{impl_for_name}> for EventBodyOwned {{
+	#[cfg(feature = \"zbus\")]
+	crate::macros::impl_to_dbus_message!({impl_for_name});
+	#[cfg(feature = \"zbus\")]
+	crate::macros::impl_from_dbus_message!({impl_for_name});
+	impl From<{impl_for_name}<'_>> for EventBodyOwned {{
 		fn from({event_var_name}: {impl_for_name}) -> Self {{
 			{to_event_body}
 		}}
@@ -617,7 +621,7 @@ fn generate_match_rule_vec_impl(interface: &Interface) -> String {
 				.build();
     let match_rule_str = match_rule.to_string();
     format!(
-        "	impl HasMatchRule for {enum_name} {{
+        "	impl HasMatchRule for {enum_name}<'_> {{
       const MATCH_RULE_STRING: &'static str = \"{match_rule_str}\";
 	}}"
     )
@@ -628,7 +632,7 @@ fn generate_registry_event_enum_impl(interface: &Interface) -> String {
     let iface_name = iface_to_enum_name(interface);
     let enum_name = events_ident(iface_name);
     format!(
-        "	impl HasRegistryEventString for {enum_name} {{
+        "	impl HasRegistryEventString for {enum_name}<'_> {{
 		const REGISTRY_EVENT_STRING: &'static str = \"{iface_prefix}:\";
 	}}"
     )
@@ -692,7 +696,7 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_
 			"body"
 		}.to_string();
     format!(
-        "	impl GenericEvent<'_> for {sig_name_event} {{
+        "	impl GenericEvent<'_> for {sig_name_event}<'_> {{
       const DBUS_MEMBER: &'static str = \"{raw_member_name}\";
       const DBUS_INTERFACE: &'static str = \"{raw_interface_name}\";
       const MATCH_RULE_STRING: &'static str = \"{match_rule_str}\";
@@ -706,11 +710,11 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_
 				{signal_conversion_lit}	
 			}})
 		}}
-    fn sender(&self) -> UniqueName<'_> {{
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {{
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }}
-    fn path<'a>(&self) -> ObjectPath<'_> {{
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {{
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }}
 		fn body(&self) -> Self::Body {{
 			let copy = self.clone();
@@ -720,7 +724,6 @@ fn generate_generic_event_impl(signal: &Signal, interface: &Interface, is_empty_
 	"
     )
 }
-
 
 fn generate_mod_from_iface(iface: &Interface) -> String {
     let mod_name = iface_name(iface).to_lowercase();
@@ -757,16 +760,17 @@ fn generate_mod_from_iface(iface: &Interface) -> String {
 {STRIPPER_IGNORE_STOP}
 pub mod {mod_name} {{
 	use crate::{{
-        Event,
 		error::AtspiError,
-		events::{{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible}},
+		events::*,
+		events::{{
+			{mod_name}::*,
+		}},
+		traits::{{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody}},
 	}};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	{enums}
+	/*{enums}*/
 	{match_rule_vec_impl}
-	{structs}
+	/*{structs}*/
 	{impls}
 	{default_impls}
 	{try_from_atspi}
@@ -860,6 +864,7 @@ fn generate_enum_from_iface(iface: &Interface) -> String {
     format!(
         "
     {example}
+	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum {name_ident_plural} {{
 {signal_quotes}
@@ -905,7 +910,7 @@ pub fn create_try_from_event_impl_from_xml(file_name: &str) -> String {
         })
         .collect::<Vec<String>>()
         .join("\n");
-    format!("use crate::events::{{{event_imports}}};\n{iface_data}\n")
+    format!("use crate::types::{{{event_imports}}};\n{iface_data}\n")
 }
 
 pub fn create_events_from_xml(file_name: &str) -> String {
@@ -928,7 +933,7 @@ pub fn create_events_from_xml(file_name: &str) -> String {
         .join("\n\n");
     format!(
         "
-    use crate::AtspiError;
+    use crate::error::AtspiError;
     {module_level_doc}\n
     {iface_data}"
     )
@@ -1242,10 +1247,10 @@ fn load_saved_docvec_or_gather_new(
 fn generate_new_sources_main() -> String {
     let mut generated = String::new();
     generated.push_str(&create_events_from_xml("xml/Event.xml"));
-    generated.push_str("use crate::Event;\n");
-    generated.push_str(&create_try_from_event_impl_from_xml("xml/Cache.xml"));
-    generated.push_str(&create_try_from_event_impl_from_xml("xml/Registry.xml"));
-    generated.push_str(&create_try_from_event_impl_from_xml("xml/Socket.xml"));
+    generated.push_str("use crate::events::Event;\n");
+    //generated.push_str(&create_try_from_event_impl_from_xml("xml/Cache.xml"));
+    //generated.push_str(&create_try_from_event_impl_from_xml("xml/Registry.xml"));
+    //generated.push_str(&create_try_from_event_impl_from_xml("xml/Socket.xml"));
     generated
 }
 
@@ -1274,12 +1279,12 @@ pub fn main() {
     let args: Args = argh::from_env();
 
     // File names:
-    let source_file_name = "identify.rs";
+    let source_file_name = "impls.rs";
     let comments_file_name = "saved_manual_docs.ron";
 
     // Assumes being run from atspi crate root
     let crate_root = Path::new("./");
-    let src_path = Path::new("atspi/src/");
+    let src_path = Path::new("atspi-types/src/");
 
     // The program expects one argument at a time.
     match args {

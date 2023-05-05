@@ -1,5 +1,5 @@
 
-    use crate::AtspiError;
+    use crate::error::AtspiError;
     
 
     
@@ -9,14 +9,15 @@
 // IgnoreBlock stop
 pub mod object {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			object::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -84,13 +85,13 @@ pub mod object {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum ObjectEvents {
-		PropertyChange(PropertyChangeEvent),		BoundsChanged(BoundsChangedEvent),		LinkSelected(LinkSelectedEvent),		StateChanged(StateChangedEvent),		ChildrenChanged(ChildrenChangedEvent),		VisibleDataChanged(VisibleDataChangedEvent),		SelectionChanged(SelectionChangedEvent),		ModelChanged(ModelChangedEvent),		ActiveDescendantChanged(ActiveDescendantChangedEvent),		Announcement(AnnouncementEvent),		AttributesChanged(AttributesChangedEvent),		RowInserted(RowInsertedEvent),		RowReordered(RowReorderedEvent),		RowDeleted(RowDeletedEvent),		ColumnInserted(ColumnInsertedEvent),		ColumnReordered(ColumnReorderedEvent),		ColumnDeleted(ColumnDeletedEvent),		TextBoundsChanged(TextBoundsChangedEvent),		TextSelectionChanged(TextSelectionChangedEvent),		TextChanged(TextChangedEvent),		TextAttributesChanged(TextAttributesChangedEvent),		TextCaretMoved(TextCaretMovedEvent),
+		PropertyChange(PropertyChangeEvent<'a>),		BoundsChanged(BoundsChangedEvent<'a>),		LinkSelected(LinkSelectedEvent<'a>),		StateChanged(StateChangedEvent<'a>),		ChildrenChanged(ChildrenChangedEvent<'a>),		VisibleDataChanged(VisibleDataChangedEvent<'a>),		SelectionChanged(SelectionChangedEvent<'a>),		ModelChanged(ModelChangedEvent<'a>),		ActiveDescendantChanged(ActiveDescendantChangedEvent<'a>),		Announcement(AnnouncementEvent<'a>),		AttributesChanged(AttributesChangedEvent<'a>),		RowInserted(RowInsertedEvent<'a>),		RowReordered(RowReorderedEvent<'a>),		RowDeleted(RowDeletedEvent<'a>),		ColumnInserted(ColumnInsertedEvent<'a>),		ColumnReordered(ColumnReorderedEvent<'a>),		ColumnDeleted(ColumnDeletedEvent<'a>),		TextBoundsChanged(TextBoundsChangedEvent<'a>),		TextSelectionChanged(TextSelectionChangedEvent<'a>),		TextChanged(TextChangedEvent<'a>),		TextAttributesChanged(TextAttributesChangedEvent<'a>),		TextCaretMoved(TextCaretMovedEvent<'a>),
 	}
-	
-		impl HasMatchRule for ObjectEvents {
+	*/
+		impl HasMatchRule for ObjectEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -125,8 +126,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct PropertyChangeEvent {
-    pub item: crate::events::Accessible,
+	pub struct PropertyChangeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub property: String,
    pub value: String,
 
@@ -167,8 +168,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct BoundsChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct BoundsChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -207,8 +208,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LinkSelectedEvent {
-    pub item: crate::events::Accessible,
+	pub struct LinkSelectedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -247,8 +248,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct StateChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct StateChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub state: String,
    pub enabled: i32,
 
@@ -289,8 +290,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ChildrenChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ChildrenChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub operation: String,
    pub index_in_parent: i32,
    pub child: Accessible,
@@ -332,8 +333,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct VisibleDataChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct VisibleDataChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -372,8 +373,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct SelectionChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct SelectionChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -412,8 +413,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ModelChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ModelChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -452,8 +453,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ActiveDescendantChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ActiveDescendantChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub child: String,
 
 }
@@ -493,8 +494,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct AnnouncementEvent {
-    pub item: crate::events::Accessible,
+	pub struct AnnouncementEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub text: String,
 
 }
@@ -534,8 +535,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct AttributesChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct AttributesChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -574,8 +575,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RowInsertedEvent {
-    pub item: crate::events::Accessible,
+	pub struct RowInsertedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -614,8 +615,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RowReorderedEvent {
-    pub item: crate::events::Accessible,
+	pub struct RowReorderedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -654,8 +655,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RowDeletedEvent {
-    pub item: crate::events::Accessible,
+	pub struct RowDeletedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -694,8 +695,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ColumnInsertedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ColumnInsertedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -734,8 +735,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ColumnReorderedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ColumnReorderedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -774,8 +775,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ColumnDeletedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ColumnDeletedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -814,8 +815,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct TextBoundsChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct TextBoundsChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -854,8 +855,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct TextSelectionChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct TextSelectionChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -894,8 +895,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct TextChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct TextChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub detail: String,
    pub start_pos: i32,
    pub length: i32,
@@ -938,8 +939,8 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct TextAttributesChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct TextAttributesChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -978,14 +979,14 @@ pub mod object {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct TextCaretMovedEvent {
-    pub item: crate::events::Accessible,
+	pub struct TextCaretMovedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub position: i32,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for PropertyChangeEvent {
+    	impl GenericEvent<'_> for PropertyChangeEvent<'_> {
       const DBUS_MEMBER: &'static str = "PropertyChange";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='PropertyChange'";
@@ -999,11 +1000,11 @@ pub mod object {
 				property: body.kind, value: body.any_data.try_into()?	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1012,7 +1013,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for PropertyChangeEvent {
+    impl TryFrom<Event<'_>> for PropertyChangeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::PropertyChange(inner_event)) = event {
@@ -1025,7 +1026,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for BoundsChangedEvent {
+    	impl GenericEvent<'_> for BoundsChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "BoundsChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='BoundsChanged'";
@@ -1039,11 +1040,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1052,7 +1053,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for BoundsChangedEvent {
+    impl TryFrom<Event<'_>> for BoundsChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::BoundsChanged(inner_event)) = event {
@@ -1065,7 +1066,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for LinkSelectedEvent {
+    	impl GenericEvent<'_> for LinkSelectedEvent<'_> {
       const DBUS_MEMBER: &'static str = "LinkSelected";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='LinkSelected'";
@@ -1079,11 +1080,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1092,7 +1093,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LinkSelectedEvent {
+    impl TryFrom<Event<'_>> for LinkSelectedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::LinkSelected(inner_event)) = event {
@@ -1105,7 +1106,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for StateChangedEvent {
+    	impl GenericEvent<'_> for StateChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "StateChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='StateChanged'";
@@ -1119,11 +1120,11 @@ pub mod object {
 				state: body.kind, enabled: body.detail1	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1132,7 +1133,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for StateChangedEvent {
+    impl TryFrom<Event<'_>> for StateChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::StateChanged(inner_event)) = event {
@@ -1145,7 +1146,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ChildrenChangedEvent {
+    	impl GenericEvent<'_> for ChildrenChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ChildrenChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ChildrenChanged'";
@@ -1159,11 +1160,11 @@ pub mod object {
 				operation: body.kind, index_in_parent: body.detail1, child: body.any_data.try_into()?	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1172,7 +1173,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ChildrenChangedEvent {
+    impl TryFrom<Event<'_>> for ChildrenChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ChildrenChanged(inner_event)) = event {
@@ -1185,7 +1186,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for VisibleDataChangedEvent {
+    	impl GenericEvent<'_> for VisibleDataChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "VisibleDataChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='VisibleDataChanged'";
@@ -1199,11 +1200,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1212,7 +1213,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for VisibleDataChangedEvent {
+    impl TryFrom<Event<'_>> for VisibleDataChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::VisibleDataChanged(inner_event)) = event {
@@ -1225,7 +1226,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for SelectionChangedEvent {
+    	impl GenericEvent<'_> for SelectionChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "SelectionChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='SelectionChanged'";
@@ -1239,11 +1240,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1252,7 +1253,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for SelectionChangedEvent {
+    impl TryFrom<Event<'_>> for SelectionChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::SelectionChanged(inner_event)) = event {
@@ -1265,7 +1266,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ModelChangedEvent {
+    	impl GenericEvent<'_> for ModelChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ModelChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ModelChanged'";
@@ -1279,11 +1280,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1292,7 +1293,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ModelChangedEvent {
+    impl TryFrom<Event<'_>> for ModelChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ModelChanged(inner_event)) = event {
@@ -1305,7 +1306,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ActiveDescendantChangedEvent {
+    	impl GenericEvent<'_> for ActiveDescendantChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ActiveDescendantChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ActiveDescendantChanged'";
@@ -1319,11 +1320,11 @@ pub mod object {
 				child: body.any_data.try_into()?	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1332,7 +1333,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ActiveDescendantChangedEvent {
+    impl TryFrom<Event<'_>> for ActiveDescendantChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ActiveDescendantChanged(inner_event)) = event {
@@ -1345,7 +1346,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for AnnouncementEvent {
+    	impl GenericEvent<'_> for AnnouncementEvent<'_> {
       const DBUS_MEMBER: &'static str = "Announcement";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='Announcement'";
@@ -1359,11 +1360,11 @@ pub mod object {
 				text: body.kind	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1372,7 +1373,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for AnnouncementEvent {
+    impl TryFrom<Event<'_>> for AnnouncementEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::Announcement(inner_event)) = event {
@@ -1385,7 +1386,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for AttributesChangedEvent {
+    	impl GenericEvent<'_> for AttributesChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "AttributesChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='AttributesChanged'";
@@ -1399,11 +1400,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1412,7 +1413,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for AttributesChangedEvent {
+    impl TryFrom<Event<'_>> for AttributesChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::AttributesChanged(inner_event)) = event {
@@ -1425,7 +1426,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for RowInsertedEvent {
+    	impl GenericEvent<'_> for RowInsertedEvent<'_> {
       const DBUS_MEMBER: &'static str = "RowInserted";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='RowInserted'";
@@ -1439,11 +1440,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1452,7 +1453,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RowInsertedEvent {
+    impl TryFrom<Event<'_>> for RowInsertedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::RowInserted(inner_event)) = event {
@@ -1465,7 +1466,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for RowReorderedEvent {
+    	impl GenericEvent<'_> for RowReorderedEvent<'_> {
       const DBUS_MEMBER: &'static str = "RowReordered";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='RowReordered'";
@@ -1479,11 +1480,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1492,7 +1493,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RowReorderedEvent {
+    impl TryFrom<Event<'_>> for RowReorderedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::RowReordered(inner_event)) = event {
@@ -1505,7 +1506,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for RowDeletedEvent {
+    	impl GenericEvent<'_> for RowDeletedEvent<'_> {
       const DBUS_MEMBER: &'static str = "RowDeleted";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='RowDeleted'";
@@ -1519,11 +1520,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1532,7 +1533,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RowDeletedEvent {
+    impl TryFrom<Event<'_>> for RowDeletedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::RowDeleted(inner_event)) = event {
@@ -1545,7 +1546,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ColumnInsertedEvent {
+    	impl GenericEvent<'_> for ColumnInsertedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ColumnInserted";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ColumnInserted'";
@@ -1559,11 +1560,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1572,7 +1573,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ColumnInsertedEvent {
+    impl TryFrom<Event<'_>> for ColumnInsertedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ColumnInserted(inner_event)) = event {
@@ -1585,7 +1586,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ColumnReorderedEvent {
+    	impl GenericEvent<'_> for ColumnReorderedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ColumnReordered";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ColumnReordered'";
@@ -1599,11 +1600,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1612,7 +1613,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ColumnReorderedEvent {
+    impl TryFrom<Event<'_>> for ColumnReorderedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ColumnReordered(inner_event)) = event {
@@ -1625,7 +1626,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for ColumnDeletedEvent {
+    	impl GenericEvent<'_> for ColumnDeletedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ColumnDeleted";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='ColumnDeleted'";
@@ -1639,11 +1640,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1652,7 +1653,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ColumnDeletedEvent {
+    impl TryFrom<Event<'_>> for ColumnDeletedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::ColumnDeleted(inner_event)) = event {
@@ -1665,7 +1666,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for TextBoundsChangedEvent {
+    	impl GenericEvent<'_> for TextBoundsChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "TextBoundsChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='TextBoundsChanged'";
@@ -1679,11 +1680,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1692,7 +1693,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for TextBoundsChangedEvent {
+    impl TryFrom<Event<'_>> for TextBoundsChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::TextBoundsChanged(inner_event)) = event {
@@ -1705,7 +1706,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for TextSelectionChangedEvent {
+    	impl GenericEvent<'_> for TextSelectionChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "TextSelectionChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='TextSelectionChanged'";
@@ -1719,11 +1720,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1732,7 +1733,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for TextSelectionChangedEvent {
+    impl TryFrom<Event<'_>> for TextSelectionChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::TextSelectionChanged(inner_event)) = event {
@@ -1745,7 +1746,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for TextChangedEvent {
+    	impl GenericEvent<'_> for TextChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "TextChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='TextChanged'";
@@ -1759,11 +1760,11 @@ pub mod object {
 				detail: body.kind, start_pos: body.detail1, length: body.detail2, text: body.any_data.try_into()?	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1772,7 +1773,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for TextChangedEvent {
+    impl TryFrom<Event<'_>> for TextChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::TextChanged(inner_event)) = event {
@@ -1785,7 +1786,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for TextAttributesChangedEvent {
+    	impl GenericEvent<'_> for TextAttributesChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "TextAttributesChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='TextAttributesChanged'";
@@ -1799,11 +1800,11 @@ pub mod object {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1812,7 +1813,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for TextAttributesChangedEvent {
+    impl TryFrom<Event<'_>> for TextAttributesChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::TextAttributesChanged(inner_event)) = event {
@@ -1825,7 +1826,7 @@ pub mod object {
     
     
 
-    	impl GenericEvent<'_> for TextCaretMovedEvent {
+    	impl GenericEvent<'_> for TextCaretMovedEvent<'_> {
       const DBUS_MEMBER: &'static str = "TextCaretMoved";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Object";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Object',member='TextCaretMoved'";
@@ -1839,11 +1840,11 @@ pub mod object {
 				position: body.detail1	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -1852,7 +1853,7 @@ pub mod object {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for TextCaretMovedEvent {
+    impl TryFrom<Event<'_>> for TextCaretMovedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Object(ObjectEvents::TextCaretMoved(inner_event)) = event {
@@ -1866,12 +1867,13 @@ pub mod object {
     
 	
 	
-	impl From<ObjectEvents> for Event {
+	impl From<ObjectEvents<'_>> for Event<'_> {
 		fn from(event_enum: ObjectEvents) -> Self {
         Event::Object(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for ObjectEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for ObjectEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -1905,19 +1907,21 @@ pub mod object {
 	}
 	
   
-	impl From<PropertyChangeEvent> for ObjectEvents {
+	impl From<PropertyChangeEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: PropertyChangeEvent) -> Self {
 			ObjectEvents::PropertyChange(specific_event)
 		}
 	}
-	impl From<PropertyChangeEvent> for Event {
+	impl From<PropertyChangeEvent<'_>> for Event<'_> {
 		fn from(specific_event: PropertyChangeEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(PropertyChangeEvent);
-	crate::events::macros::impl_from_dbus_message!(PropertyChangeEvent);
-	impl From<PropertyChangeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(PropertyChangeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(PropertyChangeEvent);
+	impl From<PropertyChangeEvent<'_>> for EventBodyOwned {
 		fn from(event: PropertyChangeEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
@@ -1927,79 +1931,87 @@ pub mod object {
 	}
 	
 
-	impl From<BoundsChangedEvent> for ObjectEvents {
+	impl From<BoundsChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: BoundsChangedEvent) -> Self {
 			ObjectEvents::BoundsChanged(specific_event)
 		}
 	}
-	impl From<BoundsChangedEvent> for Event {
+	impl From<BoundsChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: BoundsChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(BoundsChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(BoundsChangedEvent);
-	impl From<BoundsChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(BoundsChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(BoundsChangedEvent);
+	impl From<BoundsChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: BoundsChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<LinkSelectedEvent> for ObjectEvents {
+	impl From<LinkSelectedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: LinkSelectedEvent) -> Self {
 			ObjectEvents::LinkSelected(specific_event)
 		}
 	}
-	impl From<LinkSelectedEvent> for Event {
+	impl From<LinkSelectedEvent<'_>> for Event<'_> {
 		fn from(specific_event: LinkSelectedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LinkSelectedEvent);
-	crate::events::macros::impl_from_dbus_message!(LinkSelectedEvent);
-	impl From<LinkSelectedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LinkSelectedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LinkSelectedEvent);
+	impl From<LinkSelectedEvent<'_>> for EventBodyOwned {
 		fn from(_: LinkSelectedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<StateChangedEvent> for ObjectEvents {
+	impl From<StateChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: StateChangedEvent) -> Self {
 			ObjectEvents::StateChanged(specific_event)
 		}
 	}
-	impl From<StateChangedEvent> for Event {
+	impl From<StateChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: StateChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(StateChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(StateChangedEvent);
-	impl From<StateChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(StateChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(StateChangedEvent);
+	impl From<StateChangedEvent<'_>> for EventBodyOwned {
 		fn from(event: StateChangedEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: event.state, detail1: event.enabled, detail2: i32::default(), any_data: zbus::zvariant::Value::U8(0).into()
+	kind: event.state, detail1: event.enabled, detail2: i32::default(), any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
 	
 
-	impl From<ChildrenChangedEvent> for ObjectEvents {
+	impl From<ChildrenChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ChildrenChangedEvent) -> Self {
 			ObjectEvents::ChildrenChanged(specific_event)
 		}
 	}
-	impl From<ChildrenChangedEvent> for Event {
+	impl From<ChildrenChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ChildrenChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ChildrenChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ChildrenChangedEvent);
-	impl From<ChildrenChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ChildrenChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ChildrenChangedEvent);
+	impl From<ChildrenChangedEvent<'_>> for EventBodyOwned {
 		fn from(event: ChildrenChangedEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
@@ -2009,76 +2021,84 @@ pub mod object {
 	}
 	
 
-	impl From<VisibleDataChangedEvent> for ObjectEvents {
+	impl From<VisibleDataChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: VisibleDataChangedEvent) -> Self {
 			ObjectEvents::VisibleDataChanged(specific_event)
 		}
 	}
-	impl From<VisibleDataChangedEvent> for Event {
+	impl From<VisibleDataChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: VisibleDataChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(VisibleDataChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(VisibleDataChangedEvent);
-	impl From<VisibleDataChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(VisibleDataChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(VisibleDataChangedEvent);
+	impl From<VisibleDataChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: VisibleDataChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<SelectionChangedEvent> for ObjectEvents {
+	impl From<SelectionChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: SelectionChangedEvent) -> Self {
 			ObjectEvents::SelectionChanged(specific_event)
 		}
 	}
-	impl From<SelectionChangedEvent> for Event {
+	impl From<SelectionChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: SelectionChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(SelectionChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(SelectionChangedEvent);
-	impl From<SelectionChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(SelectionChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(SelectionChangedEvent);
+	impl From<SelectionChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: SelectionChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ModelChangedEvent> for ObjectEvents {
+	impl From<ModelChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ModelChangedEvent) -> Self {
 			ObjectEvents::ModelChanged(specific_event)
 		}
 	}
-	impl From<ModelChangedEvent> for Event {
+	impl From<ModelChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ModelChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ModelChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ModelChangedEvent);
-	impl From<ModelChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ModelChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ModelChangedEvent);
+	impl From<ModelChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: ModelChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ActiveDescendantChangedEvent> for ObjectEvents {
+	impl From<ActiveDescendantChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ActiveDescendantChangedEvent) -> Self {
 			ObjectEvents::ActiveDescendantChanged(specific_event)
 		}
 	}
-	impl From<ActiveDescendantChangedEvent> for Event {
+	impl From<ActiveDescendantChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ActiveDescendantChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ActiveDescendantChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ActiveDescendantChangedEvent);
-	impl From<ActiveDescendantChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ActiveDescendantChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ActiveDescendantChangedEvent);
+	impl From<ActiveDescendantChangedEvent<'_>> for EventBodyOwned {
 		fn from(event: ActiveDescendantChangedEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
@@ -2088,212 +2108,234 @@ pub mod object {
 	}
 	
 
-	impl From<AnnouncementEvent> for ObjectEvents {
+	impl From<AnnouncementEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: AnnouncementEvent) -> Self {
 			ObjectEvents::Announcement(specific_event)
 		}
 	}
-	impl From<AnnouncementEvent> for Event {
+	impl From<AnnouncementEvent<'_>> for Event<'_> {
 		fn from(specific_event: AnnouncementEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(AnnouncementEvent);
-	crate::events::macros::impl_from_dbus_message!(AnnouncementEvent);
-	impl From<AnnouncementEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(AnnouncementEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(AnnouncementEvent);
+	impl From<AnnouncementEvent<'_>> for EventBodyOwned {
 		fn from(event: AnnouncementEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: event.text, detail1: i32::default(), detail2: i32::default(), any_data: zbus::zvariant::Value::U8(0).into()
+	kind: event.text, detail1: i32::default(), detail2: i32::default(), any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
 	
 
-	impl From<AttributesChangedEvent> for ObjectEvents {
+	impl From<AttributesChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: AttributesChangedEvent) -> Self {
 			ObjectEvents::AttributesChanged(specific_event)
 		}
 	}
-	impl From<AttributesChangedEvent> for Event {
+	impl From<AttributesChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: AttributesChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(AttributesChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(AttributesChangedEvent);
-	impl From<AttributesChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(AttributesChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(AttributesChangedEvent);
+	impl From<AttributesChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: AttributesChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RowInsertedEvent> for ObjectEvents {
+	impl From<RowInsertedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: RowInsertedEvent) -> Self {
 			ObjectEvents::RowInserted(specific_event)
 		}
 	}
-	impl From<RowInsertedEvent> for Event {
+	impl From<RowInsertedEvent<'_>> for Event<'_> {
 		fn from(specific_event: RowInsertedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RowInsertedEvent);
-	crate::events::macros::impl_from_dbus_message!(RowInsertedEvent);
-	impl From<RowInsertedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RowInsertedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RowInsertedEvent);
+	impl From<RowInsertedEvent<'_>> for EventBodyOwned {
 		fn from(_: RowInsertedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RowReorderedEvent> for ObjectEvents {
+	impl From<RowReorderedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: RowReorderedEvent) -> Self {
 			ObjectEvents::RowReordered(specific_event)
 		}
 	}
-	impl From<RowReorderedEvent> for Event {
+	impl From<RowReorderedEvent<'_>> for Event<'_> {
 		fn from(specific_event: RowReorderedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RowReorderedEvent);
-	crate::events::macros::impl_from_dbus_message!(RowReorderedEvent);
-	impl From<RowReorderedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RowReorderedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RowReorderedEvent);
+	impl From<RowReorderedEvent<'_>> for EventBodyOwned {
 		fn from(_: RowReorderedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RowDeletedEvent> for ObjectEvents {
+	impl From<RowDeletedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: RowDeletedEvent) -> Self {
 			ObjectEvents::RowDeleted(specific_event)
 		}
 	}
-	impl From<RowDeletedEvent> for Event {
+	impl From<RowDeletedEvent<'_>> for Event<'_> {
 		fn from(specific_event: RowDeletedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RowDeletedEvent);
-	crate::events::macros::impl_from_dbus_message!(RowDeletedEvent);
-	impl From<RowDeletedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RowDeletedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RowDeletedEvent);
+	impl From<RowDeletedEvent<'_>> for EventBodyOwned {
 		fn from(_: RowDeletedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ColumnInsertedEvent> for ObjectEvents {
+	impl From<ColumnInsertedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ColumnInsertedEvent) -> Self {
 			ObjectEvents::ColumnInserted(specific_event)
 		}
 	}
-	impl From<ColumnInsertedEvent> for Event {
+	impl From<ColumnInsertedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ColumnInsertedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ColumnInsertedEvent);
-	crate::events::macros::impl_from_dbus_message!(ColumnInsertedEvent);
-	impl From<ColumnInsertedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ColumnInsertedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ColumnInsertedEvent);
+	impl From<ColumnInsertedEvent<'_>> for EventBodyOwned {
 		fn from(_: ColumnInsertedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ColumnReorderedEvent> for ObjectEvents {
+	impl From<ColumnReorderedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ColumnReorderedEvent) -> Self {
 			ObjectEvents::ColumnReordered(specific_event)
 		}
 	}
-	impl From<ColumnReorderedEvent> for Event {
+	impl From<ColumnReorderedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ColumnReorderedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ColumnReorderedEvent);
-	crate::events::macros::impl_from_dbus_message!(ColumnReorderedEvent);
-	impl From<ColumnReorderedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ColumnReorderedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ColumnReorderedEvent);
+	impl From<ColumnReorderedEvent<'_>> for EventBodyOwned {
 		fn from(_: ColumnReorderedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ColumnDeletedEvent> for ObjectEvents {
+	impl From<ColumnDeletedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: ColumnDeletedEvent) -> Self {
 			ObjectEvents::ColumnDeleted(specific_event)
 		}
 	}
-	impl From<ColumnDeletedEvent> for Event {
+	impl From<ColumnDeletedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ColumnDeletedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ColumnDeletedEvent);
-	crate::events::macros::impl_from_dbus_message!(ColumnDeletedEvent);
-	impl From<ColumnDeletedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ColumnDeletedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ColumnDeletedEvent);
+	impl From<ColumnDeletedEvent<'_>> for EventBodyOwned {
 		fn from(_: ColumnDeletedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<TextBoundsChangedEvent> for ObjectEvents {
+	impl From<TextBoundsChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: TextBoundsChangedEvent) -> Self {
 			ObjectEvents::TextBoundsChanged(specific_event)
 		}
 	}
-	impl From<TextBoundsChangedEvent> for Event {
+	impl From<TextBoundsChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: TextBoundsChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(TextBoundsChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(TextBoundsChangedEvent);
-	impl From<TextBoundsChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(TextBoundsChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(TextBoundsChangedEvent);
+	impl From<TextBoundsChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: TextBoundsChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<TextSelectionChangedEvent> for ObjectEvents {
+	impl From<TextSelectionChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: TextSelectionChangedEvent) -> Self {
 			ObjectEvents::TextSelectionChanged(specific_event)
 		}
 	}
-	impl From<TextSelectionChangedEvent> for Event {
+	impl From<TextSelectionChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: TextSelectionChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(TextSelectionChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(TextSelectionChangedEvent);
-	impl From<TextSelectionChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(TextSelectionChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(TextSelectionChangedEvent);
+	impl From<TextSelectionChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: TextSelectionChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<TextChangedEvent> for ObjectEvents {
+	impl From<TextChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: TextChangedEvent) -> Self {
 			ObjectEvents::TextChanged(specific_event)
 		}
 	}
-	impl From<TextChangedEvent> for Event {
+	impl From<TextChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: TextChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(TextChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(TextChangedEvent);
-	impl From<TextChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(TextChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(TextChangedEvent);
+	impl From<TextChangedEvent<'_>> for EventBodyOwned {
 		fn from(event: TextChangedEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
@@ -2303,42 +2345,46 @@ pub mod object {
 	}
 	
 
-	impl From<TextAttributesChangedEvent> for ObjectEvents {
+	impl From<TextAttributesChangedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: TextAttributesChangedEvent) -> Self {
 			ObjectEvents::TextAttributesChanged(specific_event)
 		}
 	}
-	impl From<TextAttributesChangedEvent> for Event {
+	impl From<TextAttributesChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: TextAttributesChangedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(TextAttributesChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(TextAttributesChangedEvent);
-	impl From<TextAttributesChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(TextAttributesChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(TextAttributesChangedEvent);
+	impl From<TextAttributesChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: TextAttributesChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<TextCaretMovedEvent> for ObjectEvents {
+	impl From<TextCaretMovedEvent<'_>> for ObjectEvents<'_> {
 		fn from(specific_event: TextCaretMovedEvent) -> Self {
 			ObjectEvents::TextCaretMoved(specific_event)
 		}
 	}
-	impl From<TextCaretMovedEvent> for Event {
+	impl From<TextCaretMovedEvent<'_>> for Event<'_> {
 		fn from(specific_event: TextCaretMovedEvent) -> Self {
 			Event::Object(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(TextCaretMovedEvent);
-	crate::events::macros::impl_from_dbus_message!(TextCaretMovedEvent);
-	impl From<TextCaretMovedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(TextCaretMovedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(TextCaretMovedEvent);
+	impl From<TextCaretMovedEvent<'_>> for EventBodyOwned {
 		fn from(event: TextCaretMovedEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: String::default(), detail1: event.position, detail2: i32::default(), any_data: zbus::zvariant::Value::U8(0).into()
+	kind: String::default(), detail1: event.position, detail2: i32::default(), any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
@@ -2475,7 +2521,7 @@ pub mod object {
 	/*impl HasRegistryEventString for TextCaretMovedEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Object:TextCaretMoved";
 	}*/
-  	impl HasRegistryEventString for ObjectEvents {
+  	impl HasRegistryEventString for ObjectEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Object:";
 	}
 }
@@ -2488,14 +2534,15 @@ pub mod object {
 // IgnoreBlock stop
 pub mod window {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			window::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -2563,13 +2610,13 @@ pub mod window {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum WindowEvents {
-		PropertyChange(PropertyChangeEvent),		Minimize(MinimizeEvent),		Maximize(MaximizeEvent),		Restore(RestoreEvent),		Close(CloseEvent),		Create(CreateEvent),		Reparent(ReparentEvent),		DesktopCreate(DesktopCreateEvent),		DesktopDestroy(DesktopDestroyEvent),		Destroy(DestroyEvent),		Activate(ActivateEvent),		Deactivate(DeactivateEvent),		Raise(RaiseEvent),		Lower(LowerEvent),		Move(MoveEvent),		Resize(ResizeEvent),		Shade(ShadeEvent),		UUshade(UUshadeEvent),		Restyle(RestyleEvent),
+		PropertyChange(PropertyChangeEvent<'a>),		Minimize(MinimizeEvent<'a>),		Maximize(MaximizeEvent<'a>),		Restore(RestoreEvent<'a>),		Close(CloseEvent<'a>),		Create(CreateEvent<'a>),		Reparent(ReparentEvent<'a>),		DesktopCreate(DesktopCreateEvent<'a>),		DesktopDestroy(DesktopDestroyEvent<'a>),		Destroy(DestroyEvent<'a>),		Activate(ActivateEvent<'a>),		Deactivate(DeactivateEvent<'a>),		Raise(RaiseEvent<'a>),		Lower(LowerEvent<'a>),		Move(MoveEvent<'a>),		Resize(ResizeEvent<'a>),		Shade(ShadeEvent<'a>),		UUshade(UUshadeEvent<'a>),		Restyle(RestyleEvent<'a>),
 	}
-	
-		impl HasMatchRule for WindowEvents {
+	*/
+		impl HasMatchRule for WindowEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -2604,8 +2651,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct PropertyChangeEvent {
-    pub item: crate::events::Accessible,
+	pub struct PropertyChangeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub property: String,
 
 }
@@ -2645,8 +2692,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct MinimizeEvent {
-    pub item: crate::events::Accessible,
+	pub struct MinimizeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2685,8 +2732,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct MaximizeEvent {
-    pub item: crate::events::Accessible,
+	pub struct MaximizeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2725,8 +2772,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RestoreEvent {
-    pub item: crate::events::Accessible,
+	pub struct RestoreEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2765,8 +2812,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct CloseEvent {
-    pub item: crate::events::Accessible,
+	pub struct CloseEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2805,8 +2852,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct CreateEvent {
-    pub item: crate::events::Accessible,
+	pub struct CreateEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2845,8 +2892,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ReparentEvent {
-    pub item: crate::events::Accessible,
+	pub struct ReparentEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2885,8 +2932,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct DesktopCreateEvent {
-    pub item: crate::events::Accessible,
+	pub struct DesktopCreateEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2925,8 +2972,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct DesktopDestroyEvent {
-    pub item: crate::events::Accessible,
+	pub struct DesktopDestroyEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -2965,8 +3012,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct DestroyEvent {
-    pub item: crate::events::Accessible,
+	pub struct DestroyEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3005,8 +3052,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ActivateEvent {
-    pub item: crate::events::Accessible,
+	pub struct ActivateEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3045,8 +3092,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct DeactivateEvent {
-    pub item: crate::events::Accessible,
+	pub struct DeactivateEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3085,8 +3132,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RaiseEvent {
-    pub item: crate::events::Accessible,
+	pub struct RaiseEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3125,8 +3172,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LowerEvent {
-    pub item: crate::events::Accessible,
+	pub struct LowerEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3165,8 +3212,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct MoveEvent {
-    pub item: crate::events::Accessible,
+	pub struct MoveEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3205,8 +3252,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ResizeEvent {
-    pub item: crate::events::Accessible,
+	pub struct ResizeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3245,8 +3292,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ShadeEvent {
-    pub item: crate::events::Accessible,
+	pub struct ShadeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3285,8 +3332,8 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct UUshadeEvent {
-    pub item: crate::events::Accessible,
+	pub struct UUshadeEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -3325,13 +3372,13 @@ pub mod window {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RestyleEvent {
-    pub item: crate::events::Accessible,
+	pub struct RestyleEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for PropertyChangeEvent {
+    	impl GenericEvent<'_> for PropertyChangeEvent<'_> {
       const DBUS_MEMBER: &'static str = "PropertyChange";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='PropertyChange'";
@@ -3345,11 +3392,11 @@ pub mod window {
 				property: body.kind	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3358,7 +3405,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for PropertyChangeEvent {
+    impl TryFrom<Event<'_>> for PropertyChangeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::PropertyChange(inner_event)) = event {
@@ -3371,7 +3418,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for MinimizeEvent {
+    	impl GenericEvent<'_> for MinimizeEvent<'_> {
       const DBUS_MEMBER: &'static str = "Minimize";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Minimize'";
@@ -3385,11 +3432,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3398,7 +3445,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for MinimizeEvent {
+    impl TryFrom<Event<'_>> for MinimizeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Minimize(inner_event)) = event {
@@ -3411,7 +3458,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for MaximizeEvent {
+    	impl GenericEvent<'_> for MaximizeEvent<'_> {
       const DBUS_MEMBER: &'static str = "Maximize";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Maximize'";
@@ -3425,11 +3472,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3438,7 +3485,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for MaximizeEvent {
+    impl TryFrom<Event<'_>> for MaximizeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Maximize(inner_event)) = event {
@@ -3451,7 +3498,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for RestoreEvent {
+    	impl GenericEvent<'_> for RestoreEvent<'_> {
       const DBUS_MEMBER: &'static str = "Restore";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Restore'";
@@ -3465,11 +3512,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3478,7 +3525,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RestoreEvent {
+    impl TryFrom<Event<'_>> for RestoreEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Restore(inner_event)) = event {
@@ -3491,7 +3538,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for CloseEvent {
+    	impl GenericEvent<'_> for CloseEvent<'_> {
       const DBUS_MEMBER: &'static str = "Close";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Close'";
@@ -3505,11 +3552,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3518,7 +3565,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for CloseEvent {
+    impl TryFrom<Event<'_>> for CloseEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Close(inner_event)) = event {
@@ -3531,7 +3578,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for CreateEvent {
+    	impl GenericEvent<'_> for CreateEvent<'_> {
       const DBUS_MEMBER: &'static str = "Create";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Create'";
@@ -3545,11 +3592,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3558,7 +3605,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for CreateEvent {
+    impl TryFrom<Event<'_>> for CreateEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Create(inner_event)) = event {
@@ -3571,7 +3618,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for ReparentEvent {
+    	impl GenericEvent<'_> for ReparentEvent<'_> {
       const DBUS_MEMBER: &'static str = "Reparent";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Reparent'";
@@ -3585,11 +3632,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3598,7 +3645,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ReparentEvent {
+    impl TryFrom<Event<'_>> for ReparentEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Reparent(inner_event)) = event {
@@ -3611,7 +3658,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for DesktopCreateEvent {
+    	impl GenericEvent<'_> for DesktopCreateEvent<'_> {
       const DBUS_MEMBER: &'static str = "DesktopCreate";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='DesktopCreate'";
@@ -3625,11 +3672,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3638,7 +3685,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for DesktopCreateEvent {
+    impl TryFrom<Event<'_>> for DesktopCreateEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::DesktopCreate(inner_event)) = event {
@@ -3651,7 +3698,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for DesktopDestroyEvent {
+    	impl GenericEvent<'_> for DesktopDestroyEvent<'_> {
       const DBUS_MEMBER: &'static str = "DesktopDestroy";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='DesktopDestroy'";
@@ -3665,11 +3712,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3678,7 +3725,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for DesktopDestroyEvent {
+    impl TryFrom<Event<'_>> for DesktopDestroyEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::DesktopDestroy(inner_event)) = event {
@@ -3691,7 +3738,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for DestroyEvent {
+    	impl GenericEvent<'_> for DestroyEvent<'_> {
       const DBUS_MEMBER: &'static str = "Destroy";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Destroy'";
@@ -3705,11 +3752,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3718,7 +3765,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for DestroyEvent {
+    impl TryFrom<Event<'_>> for DestroyEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Destroy(inner_event)) = event {
@@ -3731,7 +3778,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for ActivateEvent {
+    	impl GenericEvent<'_> for ActivateEvent<'_> {
       const DBUS_MEMBER: &'static str = "Activate";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Activate'";
@@ -3745,11 +3792,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3758,7 +3805,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ActivateEvent {
+    impl TryFrom<Event<'_>> for ActivateEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Activate(inner_event)) = event {
@@ -3771,7 +3818,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for DeactivateEvent {
+    	impl GenericEvent<'_> for DeactivateEvent<'_> {
       const DBUS_MEMBER: &'static str = "Deactivate";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Deactivate'";
@@ -3785,11 +3832,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3798,7 +3845,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for DeactivateEvent {
+    impl TryFrom<Event<'_>> for DeactivateEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Deactivate(inner_event)) = event {
@@ -3811,7 +3858,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for RaiseEvent {
+    	impl GenericEvent<'_> for RaiseEvent<'_> {
       const DBUS_MEMBER: &'static str = "Raise";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Raise'";
@@ -3825,11 +3872,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3838,7 +3885,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RaiseEvent {
+    impl TryFrom<Event<'_>> for RaiseEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Raise(inner_event)) = event {
@@ -3851,7 +3898,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for LowerEvent {
+    	impl GenericEvent<'_> for LowerEvent<'_> {
       const DBUS_MEMBER: &'static str = "Lower";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Lower'";
@@ -3865,11 +3912,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3878,7 +3925,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LowerEvent {
+    impl TryFrom<Event<'_>> for LowerEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Lower(inner_event)) = event {
@@ -3891,7 +3938,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for MoveEvent {
+    	impl GenericEvent<'_> for MoveEvent<'_> {
       const DBUS_MEMBER: &'static str = "Move";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Move'";
@@ -3905,11 +3952,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3918,7 +3965,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for MoveEvent {
+    impl TryFrom<Event<'_>> for MoveEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Move(inner_event)) = event {
@@ -3931,7 +3978,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for ResizeEvent {
+    	impl GenericEvent<'_> for ResizeEvent<'_> {
       const DBUS_MEMBER: &'static str = "Resize";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Resize'";
@@ -3945,11 +3992,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3958,7 +4005,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ResizeEvent {
+    impl TryFrom<Event<'_>> for ResizeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Resize(inner_event)) = event {
@@ -3971,7 +4018,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for ShadeEvent {
+    	impl GenericEvent<'_> for ShadeEvent<'_> {
       const DBUS_MEMBER: &'static str = "Shade";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Shade'";
@@ -3985,11 +4032,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -3998,7 +4045,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ShadeEvent {
+    impl TryFrom<Event<'_>> for ShadeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Shade(inner_event)) = event {
@@ -4011,7 +4058,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for UUshadeEvent {
+    	impl GenericEvent<'_> for UUshadeEvent<'_> {
       const DBUS_MEMBER: &'static str = "uUshade";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='uUshade'";
@@ -4025,11 +4072,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -4038,7 +4085,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for UUshadeEvent {
+    impl TryFrom<Event<'_>> for UUshadeEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::UUshade(inner_event)) = event {
@@ -4051,7 +4098,7 @@ pub mod window {
     
     
 
-    	impl GenericEvent<'_> for RestyleEvent {
+    	impl GenericEvent<'_> for RestyleEvent<'_> {
       const DBUS_MEMBER: &'static str = "Restyle";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Window";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Window',member='Restyle'";
@@ -4065,11 +4112,11 @@ pub mod window {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -4078,7 +4125,7 @@ pub mod window {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RestyleEvent {
+    impl TryFrom<Event<'_>> for RestyleEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Window(WindowEvents::Restyle(inner_event)) = event {
@@ -4092,12 +4139,13 @@ pub mod window {
     
 	
 	
-	impl From<WindowEvents> for Event {
+	impl From<WindowEvents<'_>> for Event<'_> {
 		fn from(event_enum: WindowEvents) -> Self {
         Event::Window(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for WindowEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for WindowEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -4128,364 +4176,402 @@ pub mod window {
 	}
 	
   
-	impl From<PropertyChangeEvent> for WindowEvents {
+	impl From<PropertyChangeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: PropertyChangeEvent) -> Self {
 			WindowEvents::PropertyChange(specific_event)
 		}
 	}
-	impl From<PropertyChangeEvent> for Event {
+	impl From<PropertyChangeEvent<'_>> for Event<'_> {
 		fn from(specific_event: PropertyChangeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(PropertyChangeEvent);
-	crate::events::macros::impl_from_dbus_message!(PropertyChangeEvent);
-	impl From<PropertyChangeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(PropertyChangeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(PropertyChangeEvent);
+	impl From<PropertyChangeEvent<'_>> for EventBodyOwned {
 		fn from(event: PropertyChangeEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: event.property, detail1: i32::default(), detail2: i32::default(), any_data: zbus::zvariant::Value::U8(0).into()
+	kind: event.property, detail1: i32::default(), detail2: i32::default(), any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
 	
 
-	impl From<MinimizeEvent> for WindowEvents {
+	impl From<MinimizeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: MinimizeEvent) -> Self {
 			WindowEvents::Minimize(specific_event)
 		}
 	}
-	impl From<MinimizeEvent> for Event {
+	impl From<MinimizeEvent<'_>> for Event<'_> {
 		fn from(specific_event: MinimizeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(MinimizeEvent);
-	crate::events::macros::impl_from_dbus_message!(MinimizeEvent);
-	impl From<MinimizeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(MinimizeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(MinimizeEvent);
+	impl From<MinimizeEvent<'_>> for EventBodyOwned {
 		fn from(_: MinimizeEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<MaximizeEvent> for WindowEvents {
+	impl From<MaximizeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: MaximizeEvent) -> Self {
 			WindowEvents::Maximize(specific_event)
 		}
 	}
-	impl From<MaximizeEvent> for Event {
+	impl From<MaximizeEvent<'_>> for Event<'_> {
 		fn from(specific_event: MaximizeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(MaximizeEvent);
-	crate::events::macros::impl_from_dbus_message!(MaximizeEvent);
-	impl From<MaximizeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(MaximizeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(MaximizeEvent);
+	impl From<MaximizeEvent<'_>> for EventBodyOwned {
 		fn from(_: MaximizeEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RestoreEvent> for WindowEvents {
+	impl From<RestoreEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: RestoreEvent) -> Self {
 			WindowEvents::Restore(specific_event)
 		}
 	}
-	impl From<RestoreEvent> for Event {
+	impl From<RestoreEvent<'_>> for Event<'_> {
 		fn from(specific_event: RestoreEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RestoreEvent);
-	crate::events::macros::impl_from_dbus_message!(RestoreEvent);
-	impl From<RestoreEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RestoreEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RestoreEvent);
+	impl From<RestoreEvent<'_>> for EventBodyOwned {
 		fn from(_: RestoreEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<CloseEvent> for WindowEvents {
+	impl From<CloseEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: CloseEvent) -> Self {
 			WindowEvents::Close(specific_event)
 		}
 	}
-	impl From<CloseEvent> for Event {
+	impl From<CloseEvent<'_>> for Event<'_> {
 		fn from(specific_event: CloseEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(CloseEvent);
-	crate::events::macros::impl_from_dbus_message!(CloseEvent);
-	impl From<CloseEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(CloseEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(CloseEvent);
+	impl From<CloseEvent<'_>> for EventBodyOwned {
 		fn from(_: CloseEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<CreateEvent> for WindowEvents {
+	impl From<CreateEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: CreateEvent) -> Self {
 			WindowEvents::Create(specific_event)
 		}
 	}
-	impl From<CreateEvent> for Event {
+	impl From<CreateEvent<'_>> for Event<'_> {
 		fn from(specific_event: CreateEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(CreateEvent);
-	crate::events::macros::impl_from_dbus_message!(CreateEvent);
-	impl From<CreateEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(CreateEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(CreateEvent);
+	impl From<CreateEvent<'_>> for EventBodyOwned {
 		fn from(_: CreateEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ReparentEvent> for WindowEvents {
+	impl From<ReparentEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: ReparentEvent) -> Self {
 			WindowEvents::Reparent(specific_event)
 		}
 	}
-	impl From<ReparentEvent> for Event {
+	impl From<ReparentEvent<'_>> for Event<'_> {
 		fn from(specific_event: ReparentEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ReparentEvent);
-	crate::events::macros::impl_from_dbus_message!(ReparentEvent);
-	impl From<ReparentEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ReparentEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ReparentEvent);
+	impl From<ReparentEvent<'_>> for EventBodyOwned {
 		fn from(_: ReparentEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<DesktopCreateEvent> for WindowEvents {
+	impl From<DesktopCreateEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: DesktopCreateEvent) -> Self {
 			WindowEvents::DesktopCreate(specific_event)
 		}
 	}
-	impl From<DesktopCreateEvent> for Event {
+	impl From<DesktopCreateEvent<'_>> for Event<'_> {
 		fn from(specific_event: DesktopCreateEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(DesktopCreateEvent);
-	crate::events::macros::impl_from_dbus_message!(DesktopCreateEvent);
-	impl From<DesktopCreateEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(DesktopCreateEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(DesktopCreateEvent);
+	impl From<DesktopCreateEvent<'_>> for EventBodyOwned {
 		fn from(_: DesktopCreateEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<DesktopDestroyEvent> for WindowEvents {
+	impl From<DesktopDestroyEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: DesktopDestroyEvent) -> Self {
 			WindowEvents::DesktopDestroy(specific_event)
 		}
 	}
-	impl From<DesktopDestroyEvent> for Event {
+	impl From<DesktopDestroyEvent<'_>> for Event<'_> {
 		fn from(specific_event: DesktopDestroyEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(DesktopDestroyEvent);
-	crate::events::macros::impl_from_dbus_message!(DesktopDestroyEvent);
-	impl From<DesktopDestroyEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(DesktopDestroyEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(DesktopDestroyEvent);
+	impl From<DesktopDestroyEvent<'_>> for EventBodyOwned {
 		fn from(_: DesktopDestroyEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<DestroyEvent> for WindowEvents {
+	impl From<DestroyEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: DestroyEvent) -> Self {
 			WindowEvents::Destroy(specific_event)
 		}
 	}
-	impl From<DestroyEvent> for Event {
+	impl From<DestroyEvent<'_>> for Event<'_> {
 		fn from(specific_event: DestroyEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(DestroyEvent);
-	crate::events::macros::impl_from_dbus_message!(DestroyEvent);
-	impl From<DestroyEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(DestroyEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(DestroyEvent);
+	impl From<DestroyEvent<'_>> for EventBodyOwned {
 		fn from(_: DestroyEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ActivateEvent> for WindowEvents {
+	impl From<ActivateEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: ActivateEvent) -> Self {
 			WindowEvents::Activate(specific_event)
 		}
 	}
-	impl From<ActivateEvent> for Event {
+	impl From<ActivateEvent<'_>> for Event<'_> {
 		fn from(specific_event: ActivateEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ActivateEvent);
-	crate::events::macros::impl_from_dbus_message!(ActivateEvent);
-	impl From<ActivateEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ActivateEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ActivateEvent);
+	impl From<ActivateEvent<'_>> for EventBodyOwned {
 		fn from(_: ActivateEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<DeactivateEvent> for WindowEvents {
+	impl From<DeactivateEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: DeactivateEvent) -> Self {
 			WindowEvents::Deactivate(specific_event)
 		}
 	}
-	impl From<DeactivateEvent> for Event {
+	impl From<DeactivateEvent<'_>> for Event<'_> {
 		fn from(specific_event: DeactivateEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(DeactivateEvent);
-	crate::events::macros::impl_from_dbus_message!(DeactivateEvent);
-	impl From<DeactivateEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(DeactivateEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(DeactivateEvent);
+	impl From<DeactivateEvent<'_>> for EventBodyOwned {
 		fn from(_: DeactivateEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RaiseEvent> for WindowEvents {
+	impl From<RaiseEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: RaiseEvent) -> Self {
 			WindowEvents::Raise(specific_event)
 		}
 	}
-	impl From<RaiseEvent> for Event {
+	impl From<RaiseEvent<'_>> for Event<'_> {
 		fn from(specific_event: RaiseEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RaiseEvent);
-	crate::events::macros::impl_from_dbus_message!(RaiseEvent);
-	impl From<RaiseEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RaiseEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RaiseEvent);
+	impl From<RaiseEvent<'_>> for EventBodyOwned {
 		fn from(_: RaiseEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<LowerEvent> for WindowEvents {
+	impl From<LowerEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: LowerEvent) -> Self {
 			WindowEvents::Lower(specific_event)
 		}
 	}
-	impl From<LowerEvent> for Event {
+	impl From<LowerEvent<'_>> for Event<'_> {
 		fn from(specific_event: LowerEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LowerEvent);
-	crate::events::macros::impl_from_dbus_message!(LowerEvent);
-	impl From<LowerEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LowerEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LowerEvent);
+	impl From<LowerEvent<'_>> for EventBodyOwned {
 		fn from(_: LowerEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<MoveEvent> for WindowEvents {
+	impl From<MoveEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: MoveEvent) -> Self {
 			WindowEvents::Move(specific_event)
 		}
 	}
-	impl From<MoveEvent> for Event {
+	impl From<MoveEvent<'_>> for Event<'_> {
 		fn from(specific_event: MoveEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(MoveEvent);
-	crate::events::macros::impl_from_dbus_message!(MoveEvent);
-	impl From<MoveEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(MoveEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(MoveEvent);
+	impl From<MoveEvent<'_>> for EventBodyOwned {
 		fn from(_: MoveEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ResizeEvent> for WindowEvents {
+	impl From<ResizeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: ResizeEvent) -> Self {
 			WindowEvents::Resize(specific_event)
 		}
 	}
-	impl From<ResizeEvent> for Event {
+	impl From<ResizeEvent<'_>> for Event<'_> {
 		fn from(specific_event: ResizeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ResizeEvent);
-	crate::events::macros::impl_from_dbus_message!(ResizeEvent);
-	impl From<ResizeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ResizeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ResizeEvent);
+	impl From<ResizeEvent<'_>> for EventBodyOwned {
 		fn from(_: ResizeEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ShadeEvent> for WindowEvents {
+	impl From<ShadeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: ShadeEvent) -> Self {
 			WindowEvents::Shade(specific_event)
 		}
 	}
-	impl From<ShadeEvent> for Event {
+	impl From<ShadeEvent<'_>> for Event<'_> {
 		fn from(specific_event: ShadeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ShadeEvent);
-	crate::events::macros::impl_from_dbus_message!(ShadeEvent);
-	impl From<ShadeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ShadeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ShadeEvent);
+	impl From<ShadeEvent<'_>> for EventBodyOwned {
 		fn from(_: ShadeEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<UUshadeEvent> for WindowEvents {
+	impl From<UUshadeEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: UUshadeEvent) -> Self {
 			WindowEvents::UUshade(specific_event)
 		}
 	}
-	impl From<UUshadeEvent> for Event {
+	impl From<UUshadeEvent<'_>> for Event<'_> {
 		fn from(specific_event: UUshadeEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(UUshadeEvent);
-	crate::events::macros::impl_from_dbus_message!(UUshadeEvent);
-	impl From<UUshadeEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(UUshadeEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(UUshadeEvent);
+	impl From<UUshadeEvent<'_>> for EventBodyOwned {
 		fn from(_: UUshadeEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<RestyleEvent> for WindowEvents {
+	impl From<RestyleEvent<'_>> for WindowEvents<'_> {
 		fn from(specific_event: RestyleEvent) -> Self {
 			WindowEvents::Restyle(specific_event)
 		}
 	}
-	impl From<RestyleEvent> for Event {
+	impl From<RestyleEvent<'_>> for Event<'_> {
 		fn from(specific_event: RestyleEvent) -> Self {
 			Event::Window(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RestyleEvent);
-	crate::events::macros::impl_from_dbus_message!(RestyleEvent);
-	impl From<RestyleEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RestyleEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RestyleEvent);
+	impl From<RestyleEvent<'_>> for EventBodyOwned {
 		fn from(_: RestyleEvent) -> Self {
 			EventBodyOwned::default()
 		}
@@ -4605,7 +4691,7 @@ pub mod window {
 	/*impl HasRegistryEventString for RestyleEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Window:Restyle";
 	}*/
-  	impl HasRegistryEventString for WindowEvents {
+  	impl HasRegistryEventString for WindowEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Window:";
 	}
 }
@@ -4618,14 +4704,15 @@ pub mod window {
 // IgnoreBlock stop
 pub mod mouse {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			mouse::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -4693,13 +4780,13 @@ pub mod mouse {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum MouseEvents {
-		Abs(AbsEvent),		Rel(RelEvent),		Button(ButtonEvent),
+		Abs(AbsEvent<'a>),		Rel(RelEvent<'a>),		Button(ButtonEvent<'a>),
 	}
-	
-		impl HasMatchRule for MouseEvents {
+	*/
+		impl HasMatchRule for MouseEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Mouse'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -4734,8 +4821,8 @@ pub mod mouse {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct AbsEvent {
-    pub item: crate::events::Accessible,
+	pub struct AbsEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub x: i32,
    pub y: i32,
 
@@ -4776,8 +4863,8 @@ pub mod mouse {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct RelEvent {
-    pub item: crate::events::Accessible,
+	pub struct RelEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub x: i32,
    pub y: i32,
 
@@ -4818,16 +4905,16 @@ pub mod mouse {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ButtonEvent {
-    pub item: crate::events::Accessible,
+	pub struct ButtonEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub detail: String,
    pub mouse_x: i32,
    pub mouse_y: i32,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for AbsEvent {
+    	impl GenericEvent<'_> for AbsEvent<'_> {
       const DBUS_MEMBER: &'static str = "Abs";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Mouse";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Mouse',member='Abs'";
@@ -4841,11 +4928,11 @@ pub mod mouse {
 				x: body.detail1, y: body.detail2	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -4854,7 +4941,7 @@ pub mod mouse {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for AbsEvent {
+    impl TryFrom<Event<'_>> for AbsEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Mouse(MouseEvents::Abs(inner_event)) = event {
@@ -4867,7 +4954,7 @@ pub mod mouse {
     
     
 
-    	impl GenericEvent<'_> for RelEvent {
+    	impl GenericEvent<'_> for RelEvent<'_> {
       const DBUS_MEMBER: &'static str = "Rel";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Mouse";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Mouse',member='Rel'";
@@ -4881,11 +4968,11 @@ pub mod mouse {
 				x: body.detail1, y: body.detail2	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -4894,7 +4981,7 @@ pub mod mouse {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for RelEvent {
+    impl TryFrom<Event<'_>> for RelEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Mouse(MouseEvents::Rel(inner_event)) = event {
@@ -4907,7 +4994,7 @@ pub mod mouse {
     
     
 
-    	impl GenericEvent<'_> for ButtonEvent {
+    	impl GenericEvent<'_> for ButtonEvent<'_> {
       const DBUS_MEMBER: &'static str = "Button";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Mouse";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Mouse',member='Button'";
@@ -4921,11 +5008,11 @@ pub mod mouse {
 				detail: body.kind, mouse_x: body.detail1, mouse_y: body.detail2	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -4934,7 +5021,7 @@ pub mod mouse {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ButtonEvent {
+    impl TryFrom<Event<'_>> for ButtonEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Mouse(MouseEvents::Button(inner_event)) = event {
@@ -4948,12 +5035,13 @@ pub mod mouse {
     
 	
 	
-	impl From<MouseEvents> for Event {
+	impl From<MouseEvents<'_>> for Event<'_> {
 		fn from(event_enum: MouseEvents) -> Self {
         Event::Mouse(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for MouseEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for MouseEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -4968,67 +5056,73 @@ pub mod mouse {
 	}
 	
   
-	impl From<AbsEvent> for MouseEvents {
+	impl From<AbsEvent<'_>> for MouseEvents<'_> {
 		fn from(specific_event: AbsEvent) -> Self {
 			MouseEvents::Abs(specific_event)
 		}
 	}
-	impl From<AbsEvent> for Event {
+	impl From<AbsEvent<'_>> for Event<'_> {
 		fn from(specific_event: AbsEvent) -> Self {
 			Event::Mouse(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(AbsEvent);
-	crate::events::macros::impl_from_dbus_message!(AbsEvent);
-	impl From<AbsEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(AbsEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(AbsEvent);
+	impl From<AbsEvent<'_>> for EventBodyOwned {
 		fn from(event: AbsEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: String::default(), detail1: event.x, detail2: event.y, any_data: zbus::zvariant::Value::U8(0).into()
+	kind: String::default(), detail1: event.x, detail2: event.y, any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
 	
 
-	impl From<RelEvent> for MouseEvents {
+	impl From<RelEvent<'_>> for MouseEvents<'_> {
 		fn from(specific_event: RelEvent) -> Self {
 			MouseEvents::Rel(specific_event)
 		}
 	}
-	impl From<RelEvent> for Event {
+	impl From<RelEvent<'_>> for Event<'_> {
 		fn from(specific_event: RelEvent) -> Self {
 			Event::Mouse(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(RelEvent);
-	crate::events::macros::impl_from_dbus_message!(RelEvent);
-	impl From<RelEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(RelEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(RelEvent);
+	impl From<RelEvent<'_>> for EventBodyOwned {
 		fn from(event: RelEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: String::default(), detail1: event.x, detail2: event.y, any_data: zbus::zvariant::Value::U8(0).into()
+	kind: String::default(), detail1: event.x, detail2: event.y, any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
 	
 
-	impl From<ButtonEvent> for MouseEvents {
+	impl From<ButtonEvent<'_>> for MouseEvents<'_> {
 		fn from(specific_event: ButtonEvent) -> Self {
 			MouseEvents::Button(specific_event)
 		}
 	}
-	impl From<ButtonEvent> for Event {
+	impl From<ButtonEvent<'_>> for Event<'_> {
 		fn from(specific_event: ButtonEvent) -> Self {
 			Event::Mouse(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ButtonEvent);
-	crate::events::macros::impl_from_dbus_message!(ButtonEvent);
-	impl From<ButtonEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ButtonEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ButtonEvent);
+	impl From<ButtonEvent<'_>> for EventBodyOwned {
 		fn from(event: ButtonEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: event.detail, detail1: event.mouse_x, detail2: event.mouse_y, any_data: zbus::zvariant::Value::U8(0).into()
+	kind: event.detail.to_string(), detail1: event.mouse_x, detail2: event.mouse_y, any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
@@ -5051,7 +5145,7 @@ pub mod mouse {
 	/*impl HasRegistryEventString for ButtonEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Mouse:Button";
 	}*/
-  	impl HasRegistryEventString for MouseEvents {
+  	impl HasRegistryEventString for MouseEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Mouse:";
 	}
 }
@@ -5064,14 +5158,15 @@ pub mod mouse {
 // IgnoreBlock stop
 pub mod keyboard {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			keyboard::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -5139,13 +5234,13 @@ pub mod keyboard {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum KeyboardEvents {
-		Modifiers(ModifiersEvent),
+		Modifiers(ModifiersEvent<'a>),
 	}
-	
-		impl HasMatchRule for KeyboardEvents {
+	*/
+		impl HasMatchRule for KeyboardEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Keyboard'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -5180,15 +5275,15 @@ pub mod keyboard {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ModifiersEvent {
-    pub item: crate::events::Accessible,
+	pub struct ModifiersEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
    pub previous_modifiers: i32,
    pub current_modifiers: i32,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for ModifiersEvent {
+    	impl GenericEvent<'_> for ModifiersEvent<'_> {
       const DBUS_MEMBER: &'static str = "Modifiers";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Keyboard";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Keyboard',member='Modifiers'";
@@ -5202,11 +5297,11 @@ pub mod keyboard {
 				previous_modifiers: body.detail1, current_modifiers: body.detail2	
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5215,7 +5310,7 @@ pub mod keyboard {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ModifiersEvent {
+    impl TryFrom<Event<'_>> for ModifiersEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Keyboard(KeyboardEvents::Modifiers(inner_event)) = event {
@@ -5229,12 +5324,13 @@ pub mod keyboard {
     
 	
 	
-	impl From<KeyboardEvents> for Event {
+	impl From<KeyboardEvents<'_>> for Event<'_> {
 		fn from(event_enum: KeyboardEvents) -> Self {
         Event::Keyboard(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for KeyboardEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for KeyboardEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -5247,23 +5343,25 @@ pub mod keyboard {
 	}
 	
   
-	impl From<ModifiersEvent> for KeyboardEvents {
+	impl From<ModifiersEvent<'_>> for KeyboardEvents<'_> {
 		fn from(specific_event: ModifiersEvent) -> Self {
 			KeyboardEvents::Modifiers(specific_event)
 		}
 	}
-	impl From<ModifiersEvent> for Event {
+	impl From<ModifiersEvent<'_>> for Event<'_> {
 		fn from(specific_event: ModifiersEvent) -> Self {
 			Event::Keyboard(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ModifiersEvent);
-	crate::events::macros::impl_from_dbus_message!(ModifiersEvent);
-	impl From<ModifiersEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ModifiersEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ModifiersEvent);
+	impl From<ModifiersEvent<'_>> for EventBodyOwned {
 		fn from(event: ModifiersEvent) -> Self {
 			EventBodyOwned {
 	properties: std::collections::HashMap::new(),
-	kind: String::default(), detail1: event.previous_modifiers, detail2: event.current_modifiers, any_data: zbus::zvariant::Value::U8(0).into()
+	kind: String::default(), detail1: event.previous_modifiers, detail2: event.current_modifiers, any_data: zvariant::OwnedValue::default()
 }
 		}
 	}
@@ -5274,7 +5372,7 @@ pub mod keyboard {
   	/*impl HasRegistryEventString for ModifiersEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Keyboard:Modifiers";
 	}*/
-  	impl HasRegistryEventString for KeyboardEvents {
+  	impl HasRegistryEventString for KeyboardEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Keyboard:";
 	}
 }
@@ -5287,14 +5385,15 @@ pub mod keyboard {
 // IgnoreBlock stop
 pub mod terminal {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			terminal::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -5362,13 +5461,13 @@ pub mod terminal {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum TerminalEvents {
-		LineChanged(LineChangedEvent),		ColumnCountChanged(ColumnCountChangedEvent),		LineCountChanged(LineCountChangedEvent),		ApplicationChanged(ApplicationChangedEvent),		CharWidthChanged(CharWidthChangedEvent),
+		LineChanged(LineChangedEvent<'a>),		ColumnCountChanged(ColumnCountChangedEvent<'a>),		LineCountChanged(LineCountChangedEvent<'a>),		ApplicationChanged(ApplicationChangedEvent<'a>),		CharWidthChanged(CharWidthChangedEvent<'a>),
 	}
-	
-		impl HasMatchRule for TerminalEvents {
+	*/
+		impl HasMatchRule for TerminalEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -5403,8 +5502,8 @@ pub mod terminal {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LineChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct LineChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -5443,8 +5542,8 @@ pub mod terminal {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ColumnCountChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ColumnCountChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -5483,8 +5582,8 @@ pub mod terminal {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LineCountChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct LineCountChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -5523,8 +5622,8 @@ pub mod terminal {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ApplicationChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ApplicationChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -5563,13 +5662,13 @@ pub mod terminal {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct CharWidthChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct CharWidthChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for LineChangedEvent {
+    	impl GenericEvent<'_> for LineChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "LineChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Terminal";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal',member='LineChanged'";
@@ -5583,11 +5682,11 @@ pub mod terminal {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5596,7 +5695,7 @@ pub mod terminal {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LineChangedEvent {
+    impl TryFrom<Event<'_>> for LineChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Terminal(TerminalEvents::LineChanged(inner_event)) = event {
@@ -5609,7 +5708,7 @@ pub mod terminal {
     
     
 
-    	impl GenericEvent<'_> for ColumnCountChangedEvent {
+    	impl GenericEvent<'_> for ColumnCountChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ColumncountChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Terminal";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal',member='ColumncountChanged'";
@@ -5623,11 +5722,11 @@ pub mod terminal {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5636,7 +5735,7 @@ pub mod terminal {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ColumnCountChangedEvent {
+    impl TryFrom<Event<'_>> for ColumnCountChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Terminal(TerminalEvents::ColumnCountChanged(inner_event)) = event {
@@ -5649,7 +5748,7 @@ pub mod terminal {
     
     
 
-    	impl GenericEvent<'_> for LineCountChangedEvent {
+    	impl GenericEvent<'_> for LineCountChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "LinecountChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Terminal";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal',member='LinecountChanged'";
@@ -5663,11 +5762,11 @@ pub mod terminal {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5676,7 +5775,7 @@ pub mod terminal {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LineCountChangedEvent {
+    impl TryFrom<Event<'_>> for LineCountChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Terminal(TerminalEvents::LineCountChanged(inner_event)) = event {
@@ -5689,7 +5788,7 @@ pub mod terminal {
     
     
 
-    	impl GenericEvent<'_> for ApplicationChangedEvent {
+    	impl GenericEvent<'_> for ApplicationChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ApplicationChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Terminal";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal',member='ApplicationChanged'";
@@ -5703,11 +5802,11 @@ pub mod terminal {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5716,7 +5815,7 @@ pub mod terminal {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ApplicationChangedEvent {
+    impl TryFrom<Event<'_>> for ApplicationChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Terminal(TerminalEvents::ApplicationChanged(inner_event)) = event {
@@ -5729,7 +5828,7 @@ pub mod terminal {
     
     
 
-    	impl GenericEvent<'_> for CharWidthChangedEvent {
+    	impl GenericEvent<'_> for CharWidthChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "CharwidthChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Terminal";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Terminal',member='CharwidthChanged'";
@@ -5743,11 +5842,11 @@ pub mod terminal {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -5756,7 +5855,7 @@ pub mod terminal {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for CharWidthChangedEvent {
+    impl TryFrom<Event<'_>> for CharWidthChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Terminal(TerminalEvents::CharWidthChanged(inner_event)) = event {
@@ -5770,12 +5869,13 @@ pub mod terminal {
     
 	
 	
-	impl From<TerminalEvents> for Event {
+	impl From<TerminalEvents<'_>> for Event<'_> {
 		fn from(event_enum: TerminalEvents) -> Self {
         Event::Terminal(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for TerminalEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for TerminalEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -5792,95 +5892,105 @@ pub mod terminal {
 	}
 	
   
-	impl From<LineChangedEvent> for TerminalEvents {
+	impl From<LineChangedEvent<'_>> for TerminalEvents<'_> {
 		fn from(specific_event: LineChangedEvent) -> Self {
 			TerminalEvents::LineChanged(specific_event)
 		}
 	}
-	impl From<LineChangedEvent> for Event {
+	impl From<LineChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: LineChangedEvent) -> Self {
 			Event::Terminal(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LineChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(LineChangedEvent);
-	impl From<LineChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LineChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LineChangedEvent);
+	impl From<LineChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: LineChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ColumnCountChangedEvent> for TerminalEvents {
+	impl From<ColumnCountChangedEvent<'_>> for TerminalEvents<'_> {
 		fn from(specific_event: ColumnCountChangedEvent) -> Self {
 			TerminalEvents::ColumnCountChanged(specific_event)
 		}
 	}
-	impl From<ColumnCountChangedEvent> for Event {
+	impl From<ColumnCountChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ColumnCountChangedEvent) -> Self {
 			Event::Terminal(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ColumnCountChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ColumnCountChangedEvent);
-	impl From<ColumnCountChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ColumnCountChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ColumnCountChangedEvent);
+	impl From<ColumnCountChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: ColumnCountChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<LineCountChangedEvent> for TerminalEvents {
+	impl From<LineCountChangedEvent<'_>> for TerminalEvents<'_> {
 		fn from(specific_event: LineCountChangedEvent) -> Self {
 			TerminalEvents::LineCountChanged(specific_event)
 		}
 	}
-	impl From<LineCountChangedEvent> for Event {
+	impl From<LineCountChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: LineCountChangedEvent) -> Self {
 			Event::Terminal(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LineCountChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(LineCountChangedEvent);
-	impl From<LineCountChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LineCountChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LineCountChangedEvent);
+	impl From<LineCountChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: LineCountChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ApplicationChangedEvent> for TerminalEvents {
+	impl From<ApplicationChangedEvent<'_>> for TerminalEvents<'_> {
 		fn from(specific_event: ApplicationChangedEvent) -> Self {
 			TerminalEvents::ApplicationChanged(specific_event)
 		}
 	}
-	impl From<ApplicationChangedEvent> for Event {
+	impl From<ApplicationChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ApplicationChangedEvent) -> Self {
 			Event::Terminal(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ApplicationChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ApplicationChangedEvent);
-	impl From<ApplicationChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ApplicationChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ApplicationChangedEvent);
+	impl From<ApplicationChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: ApplicationChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<CharWidthChangedEvent> for TerminalEvents {
+	impl From<CharWidthChangedEvent<'_>> for TerminalEvents<'_> {
 		fn from(specific_event: CharWidthChangedEvent) -> Self {
 			TerminalEvents::CharWidthChanged(specific_event)
 		}
 	}
-	impl From<CharWidthChangedEvent> for Event {
+	impl From<CharWidthChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: CharWidthChangedEvent) -> Self {
 			Event::Terminal(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(CharWidthChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(CharWidthChangedEvent);
-	impl From<CharWidthChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(CharWidthChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(CharWidthChangedEvent);
+	impl From<CharWidthChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: CharWidthChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
@@ -5916,7 +6026,7 @@ pub mod terminal {
 	/*impl HasRegistryEventString for CharWidthChangedEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Terminal:CharwidthChanged";
 	}*/
-  	impl HasRegistryEventString for TerminalEvents {
+  	impl HasRegistryEventString for TerminalEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Terminal:";
 	}
 }
@@ -5929,14 +6039,15 @@ pub mod terminal {
 // IgnoreBlock stop
 pub mod document {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			document::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -6004,13 +6115,13 @@ pub mod document {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum DocumentEvents {
-		LoadComplete(LoadCompleteEvent),		Reload(ReloadEvent),		LoadStopped(LoadStoppedEvent),		ContentChanged(ContentChangedEvent),		AttributesChanged(AttributesChangedEvent),		PageChanged(PageChangedEvent),
+		LoadComplete(LoadCompleteEvent<'a>),		Reload(ReloadEvent<'a>),		LoadStopped(LoadStoppedEvent<'a>),		ContentChanged(ContentChangedEvent<'a>),		AttributesChanged(AttributesChangedEvent<'a>),		PageChanged(PageChangedEvent<'a>),
 	}
-	
-		impl HasMatchRule for DocumentEvents {
+	*/
+		impl HasMatchRule for DocumentEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -6045,8 +6156,8 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LoadCompleteEvent {
-    pub item: crate::events::Accessible,
+	pub struct LoadCompleteEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -6085,8 +6196,8 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ReloadEvent {
-    pub item: crate::events::Accessible,
+	pub struct ReloadEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -6125,8 +6236,8 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct LoadStoppedEvent {
-    pub item: crate::events::Accessible,
+	pub struct LoadStoppedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -6165,8 +6276,8 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct ContentChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct ContentChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -6205,8 +6316,8 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct AttributesChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct AttributesChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
 	
@@ -6245,13 +6356,13 @@ pub mod document {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct PageChangedEvent {
-    pub item: crate::events::Accessible,
+	pub struct PageChangedEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for LoadCompleteEvent {
+    	impl GenericEvent<'_> for LoadCompleteEvent<'_> {
       const DBUS_MEMBER: &'static str = "LoadComplete";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='LoadComplete'";
@@ -6265,11 +6376,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6278,7 +6389,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LoadCompleteEvent {
+    impl TryFrom<Event<'_>> for LoadCompleteEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::LoadComplete(inner_event)) = event {
@@ -6291,7 +6402,7 @@ pub mod document {
     
     
 
-    	impl GenericEvent<'_> for ReloadEvent {
+    	impl GenericEvent<'_> for ReloadEvent<'_> {
       const DBUS_MEMBER: &'static str = "Reload";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='Reload'";
@@ -6305,11 +6416,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6318,7 +6429,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ReloadEvent {
+    impl TryFrom<Event<'_>> for ReloadEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::Reload(inner_event)) = event {
@@ -6331,7 +6442,7 @@ pub mod document {
     
     
 
-    	impl GenericEvent<'_> for LoadStoppedEvent {
+    	impl GenericEvent<'_> for LoadStoppedEvent<'_> {
       const DBUS_MEMBER: &'static str = "LoadStopped";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='LoadStopped'";
@@ -6345,11 +6456,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6358,7 +6469,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for LoadStoppedEvent {
+    impl TryFrom<Event<'_>> for LoadStoppedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::LoadStopped(inner_event)) = event {
@@ -6371,7 +6482,7 @@ pub mod document {
     
     
 
-    	impl GenericEvent<'_> for ContentChangedEvent {
+    	impl GenericEvent<'_> for ContentChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "ContentChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='ContentChanged'";
@@ -6385,11 +6496,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6398,7 +6509,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for ContentChangedEvent {
+    impl TryFrom<Event<'_>> for ContentChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::ContentChanged(inner_event)) = event {
@@ -6411,7 +6522,7 @@ pub mod document {
     
     
 
-    	impl GenericEvent<'_> for AttributesChangedEvent {
+    	impl GenericEvent<'_> for AttributesChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "AttributesChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='AttributesChanged'";
@@ -6425,11 +6536,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6438,7 +6549,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for AttributesChangedEvent {
+    impl TryFrom<Event<'_>> for AttributesChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::AttributesChanged(inner_event)) = event {
@@ -6451,7 +6562,7 @@ pub mod document {
     
     
 
-    	impl GenericEvent<'_> for PageChangedEvent {
+    	impl GenericEvent<'_> for PageChangedEvent<'_> {
       const DBUS_MEMBER: &'static str = "PageChanged";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Document";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Document',member='PageChanged'";
@@ -6465,11 +6576,11 @@ pub mod document {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6478,7 +6589,7 @@ pub mod document {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for PageChangedEvent {
+    impl TryFrom<Event<'_>> for PageChangedEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Document(DocumentEvents::PageChanged(inner_event)) = event {
@@ -6492,12 +6603,13 @@ pub mod document {
     
 	
 	
-	impl From<DocumentEvents> for Event {
+	impl From<DocumentEvents<'_>> for Event<'_> {
 		fn from(event_enum: DocumentEvents) -> Self {
         Event::Document(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for DocumentEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for DocumentEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -6515,114 +6627,126 @@ pub mod document {
 	}
 	
   
-	impl From<LoadCompleteEvent> for DocumentEvents {
+	impl From<LoadCompleteEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: LoadCompleteEvent) -> Self {
 			DocumentEvents::LoadComplete(specific_event)
 		}
 	}
-	impl From<LoadCompleteEvent> for Event {
+	impl From<LoadCompleteEvent<'_>> for Event<'_> {
 		fn from(specific_event: LoadCompleteEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LoadCompleteEvent);
-	crate::events::macros::impl_from_dbus_message!(LoadCompleteEvent);
-	impl From<LoadCompleteEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LoadCompleteEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LoadCompleteEvent);
+	impl From<LoadCompleteEvent<'_>> for EventBodyOwned {
 		fn from(_: LoadCompleteEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ReloadEvent> for DocumentEvents {
+	impl From<ReloadEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: ReloadEvent) -> Self {
 			DocumentEvents::Reload(specific_event)
 		}
 	}
-	impl From<ReloadEvent> for Event {
+	impl From<ReloadEvent<'_>> for Event<'_> {
 		fn from(specific_event: ReloadEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ReloadEvent);
-	crate::events::macros::impl_from_dbus_message!(ReloadEvent);
-	impl From<ReloadEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ReloadEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ReloadEvent);
+	impl From<ReloadEvent<'_>> for EventBodyOwned {
 		fn from(_: ReloadEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<LoadStoppedEvent> for DocumentEvents {
+	impl From<LoadStoppedEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: LoadStoppedEvent) -> Self {
 			DocumentEvents::LoadStopped(specific_event)
 		}
 	}
-	impl From<LoadStoppedEvent> for Event {
+	impl From<LoadStoppedEvent<'_>> for Event<'_> {
 		fn from(specific_event: LoadStoppedEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(LoadStoppedEvent);
-	crate::events::macros::impl_from_dbus_message!(LoadStoppedEvent);
-	impl From<LoadStoppedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(LoadStoppedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(LoadStoppedEvent);
+	impl From<LoadStoppedEvent<'_>> for EventBodyOwned {
 		fn from(_: LoadStoppedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<ContentChangedEvent> for DocumentEvents {
+	impl From<ContentChangedEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: ContentChangedEvent) -> Self {
 			DocumentEvents::ContentChanged(specific_event)
 		}
 	}
-	impl From<ContentChangedEvent> for Event {
+	impl From<ContentChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: ContentChangedEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(ContentChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(ContentChangedEvent);
-	impl From<ContentChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(ContentChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(ContentChangedEvent);
+	impl From<ContentChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: ContentChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<AttributesChangedEvent> for DocumentEvents {
+	impl From<AttributesChangedEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: AttributesChangedEvent) -> Self {
 			DocumentEvents::AttributesChanged(specific_event)
 		}
 	}
-	impl From<AttributesChangedEvent> for Event {
+	impl From<AttributesChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: AttributesChangedEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(AttributesChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(AttributesChangedEvent);
-	impl From<AttributesChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(AttributesChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(AttributesChangedEvent);
+	impl From<AttributesChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: AttributesChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
 	}
 	
 
-	impl From<PageChangedEvent> for DocumentEvents {
+	impl From<PageChangedEvent<'_>> for DocumentEvents<'_> {
 		fn from(specific_event: PageChangedEvent) -> Self {
 			DocumentEvents::PageChanged(specific_event)
 		}
 	}
-	impl From<PageChangedEvent> for Event {
+	impl From<PageChangedEvent<'_>> for Event<'_> {
 		fn from(specific_event: PageChangedEvent) -> Self {
 			Event::Document(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(PageChangedEvent);
-	crate::events::macros::impl_from_dbus_message!(PageChangedEvent);
-	impl From<PageChangedEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(PageChangedEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(PageChangedEvent);
+	impl From<PageChangedEvent<'_>> for EventBodyOwned {
 		fn from(_: PageChangedEvent) -> Self {
 			EventBodyOwned::default()
 		}
@@ -6664,7 +6788,7 @@ pub mod document {
 	/*impl HasRegistryEventString for PageChangedEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Document:PageChanged";
 	}*/
-  	impl HasRegistryEventString for DocumentEvents {
+  	impl HasRegistryEventString for DocumentEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Document:";
 	}
 }
@@ -6677,14 +6801,15 @@ pub mod document {
 // IgnoreBlock stop
 pub mod focus {
 	use crate::{
-        Event,
 		error::AtspiError,
-		events::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, Accessible},
+		events::*,
+		events::{
+			focus::*,
+		},
+		traits::{GenericEvent, HasMatchRule, HasRegistryEventString, EventBodyOwned, EventBody},
 	};
-	use zbus;
 	use zvariant::ObjectPath;
-  use zbus::names::UniqueName;
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -6752,13 +6877,13 @@ pub mod focus {
 	#[repr(C)]
 	#[derive(Clone, Debug)]
 	pub enum FocusEvents {
-		Focus(FocusEvent),
+		Focus(FocusEvent<'a>),
 	}
-	
-		impl HasMatchRule for FocusEvents {
+	*/
+		impl HasMatchRule for FocusEvents<'_> {
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Focus'";
 	}
-	
+	/*
     // IgnoreBlock start
     /// # Example
     ///
@@ -6793,13 +6918,13 @@ pub mod focus {
     // IgnoreBlock stop
 	#[repr(C)]
 	#[derive(Debug, PartialEq, Clone, Default)]
-	pub struct FocusEvent {
-    pub item: crate::events::Accessible,
+	pub struct FocusEvent<'a> {
+    pub item: crate::accessible::Accessible<'a>,
 
 }
+	*/
 	
-	
-    	impl GenericEvent<'_> for FocusEvent {
+    	impl GenericEvent<'_> for FocusEvent<'_> {
       const DBUS_MEMBER: &'static str = "Focus";
       const DBUS_INTERFACE: &'static str = "org.a11y.atspi.Event.Focus";
       const MATCH_RULE_STRING: &'static str = "type='signal',interface='org.a11y.atspi.Event.Focus',member='Focus'";
@@ -6813,11 +6938,11 @@ pub mod focus {
 					
 			})
 		}
-    fn sender(&self) -> UniqueName<'_> {
-      self.item.name.clone().into()
+    fn sender(&self) -> zbus_names::UniqueName<'_> {
+      zbus_names::UniqueName::try_from(self.item.name.clone()).unwrap()
     }
-    fn path<'a>(&self) -> ObjectPath<'_> {
-      self.item.path.clone().into()
+    fn path<'a>(&self) -> zvariant::ObjectPath<'_> {
+      zvariant::ObjectPath::try_from(self.item.path.clone()).unwrap()
     }
 		fn body(&self) -> Self::Body {
 			let copy = self.clone();
@@ -6826,7 +6951,7 @@ pub mod focus {
 	}
 	
     #[rustfmt::skip]
-    impl TryFrom<Event> for FocusEvent {
+    impl TryFrom<Event<'_>> for FocusEvent<'_> {
 	type Error = AtspiError;
 	fn try_from(event: Event) -> Result<Self, Self::Error> {
        if let Event::Focus(FocusEvents::Focus(inner_event)) = event {
@@ -6840,12 +6965,13 @@ pub mod focus {
     
 	
 	
-	impl From<FocusEvents> for Event {
+	impl From<FocusEvents<'_>> for Event<'_> {
 		fn from(event_enum: FocusEvents) -> Self {
         Event::Focus(event_enum)
 		}
 	}
-	impl TryFrom<&zbus::Message> for FocusEvents {
+	#[cfg(feature = "zbus")]
+	impl TryFrom<&zbus::Message> for FocusEvents<'_> {
 		type Error = AtspiError;
 		fn try_from(ev: &zbus::Message) -> Result<Self, Self::Error> {
 			let member = ev.member()
@@ -6858,19 +6984,21 @@ pub mod focus {
 	}
 	
   
-	impl From<FocusEvent> for FocusEvents {
+	impl From<FocusEvent<'_>> for FocusEvents<'_> {
 		fn from(specific_event: FocusEvent) -> Self {
 			FocusEvents::Focus(specific_event)
 		}
 	}
-	impl From<FocusEvent> for Event {
+	impl From<FocusEvent<'_>> for Event<'_> {
 		fn from(specific_event: FocusEvent) -> Self {
 			Event::Focus(specific_event.into())
 		}
 	}
-	crate::events::macros::impl_to_dbus_message!(FocusEvent);
-	crate::events::macros::impl_from_dbus_message!(FocusEvent);
-	impl From<FocusEvent> for EventBodyOwned {
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_to_dbus_message!(FocusEvent);
+	#[cfg(feature = "zbus")]
+	crate::macros::impl_from_dbus_message!(FocusEvent);
+	impl From<FocusEvent<'_>> for EventBodyOwned {
 		fn from(_: FocusEvent) -> Self {
 			EventBodyOwned::default()
 		}
@@ -6882,71 +7010,8 @@ pub mod focus {
   	/*impl HasRegistryEventString for FocusEvent {
 		const REGISTRY_EVENT_STRING: &'static str = "Focus:Focus";
 	}*/
-  	impl HasRegistryEventString for FocusEvents {
+  	impl HasRegistryEventString for FocusEvents<'_> {
 		const REGISTRY_EVENT_STRING: &'static str = "Focus:";
 	}
 }
-	use crate::Event;
-use crate::events::{AddAccessibleEvent,RemoveAccessibleEvent,CacheEvents};
-#[rustfmt::skip]
-    impl TryFrom<Event> for AddAccessibleEvent {
-	type Error = AtspiError;
-	fn try_from(event: Event) -> Result<Self, Self::Error> {
-       if let Event::Cache(CacheEvents::Add(inner_event)) = event {
-				Ok(inner_event)
-			} else {
-				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-    
-#[rustfmt::skip]
-    impl TryFrom<Event> for RemoveAccessibleEvent {
-	type Error = AtspiError;
-	fn try_from(event: Event) -> Result<Self, Self::Error> {
-       if let Event::Cache(CacheEvents::Remove(inner_event)) = event {
-				Ok(inner_event)
-			} else {
-				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-    
-use crate::events::{EventListenerRegisteredEvent,EventListenerDeregisteredEvent,EventListenerEvents};
-#[rustfmt::skip]
-    impl TryFrom<Event> for EventListenerRegisteredEvent {
-	type Error = AtspiError;
-	fn try_from(event: Event) -> Result<Self, Self::Error> {
-       if let Event::Listener(EventListenerEvents::Registered(inner_event)) = event {
-				Ok(inner_event)
-			} else {
-				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-    
-#[rustfmt::skip]
-    impl TryFrom<Event> for EventListenerDeregisteredEvent {
-	type Error = AtspiError;
-	fn try_from(event: Event) -> Result<Self, Self::Error> {
-       if let Event::Listener(EventListenerEvents::Deregistered(inner_event)) = event {
-				Ok(inner_event)
-			} else {
-				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-    
-use crate::events::{AvailableEvent};
-#[rustfmt::skip]
-    impl TryFrom<Event> for AvailableEvent {
-	type Error = AtspiError;
-	fn try_from(event: Event) -> Result<Self, Self::Error> {
-       if let Event::Available(inner_event) = event {
-				Ok(inner_event)
-			} else {
-				Err(AtspiError::Conversion("Invalid type"))
-			}
-		}
-	}
-    
+	use crate::events::Event;

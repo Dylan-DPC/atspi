@@ -1,0 +1,19 @@
+use * from types
+variant mouse-events {
+	abs(abs-event),
+	rel(rel-event),
+	button(button-event),
+}
+record abs-event {
+	item: accessible,
+	x: s32,
+	y: s32}
+record rel-event {
+	item: accessible,
+	x: s32,
+	y: s32}
+record button-event {
+	item: accessible,
+	detail: string,
+	mouse-x: s32,
+	mouse-y: s32}

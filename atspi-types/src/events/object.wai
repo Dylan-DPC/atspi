@@ -1,0 +1,98 @@
+use * from types
+variant object-events {
+	property-change(property-change-event),
+	bounds-changed(bounds-changed-event),
+	link-selected(link-selected-event),
+	state-changed(state-changed-event),
+	children-changed(children-changed-event),
+	visible-data-changed(visible-data-changed-event),
+	selection-changed(selection-changed-event),
+	model-changed(model-changed-event),
+	active-descendant-changed(active-descendant-changed-event),
+	announcement(announcement-event),
+	attributes-changed(attributes-changed-event),
+	row-inserted(row-inserted-event),
+	row-reordered(row-reordered-event),
+	row-deleted(row-deleted-event),
+	column-inserted(column-inserted-event),
+	column-reordered(column-reordered-event),
+	column-deleted(column-deleted-event),
+	text-bounds-changed(text-bounds-changed-event),
+	text-selection-changed(text-selection-changed-event),
+	text-changed(text-changed-event),
+	text-attributes-changed(text-attributes-changed-event),
+	text-caret-moved(text-caret-moved-event),
+}
+record property-change-event {
+	item: accessible,
+	property: string,
+	value: string}
+record bounds-changed-event {
+	item: accessible,
+}
+record link-selected-event {
+	item: accessible,
+}
+record state-changed-event {
+	item: accessible,
+	state: string,
+	enabled: s32}
+record children-changed-event {
+	item: accessible,
+	operation: string,
+	index-in-parent: s32,
+	child: accessible}
+record visible-data-changed-event {
+	item: accessible,
+}
+record selection-changed-event {
+	item: accessible,
+}
+record model-changed-event {
+	item: accessible,
+}
+record active-descendant-changed-event {
+	item: accessible,
+	child: accessible}
+record announcement-event {
+	item: accessible,
+	text: string}
+record attributes-changed-event {
+	item: accessible,
+}
+record row-inserted-event {
+	item: accessible,
+}
+record row-reordered-event {
+	item: accessible,
+}
+record row-deleted-event {
+	item: accessible,
+}
+record column-inserted-event {
+	item: accessible,
+}
+record column-reordered-event {
+	item: accessible,
+}
+record column-deleted-event {
+	item: accessible,
+}
+record text-bounds-changed-event {
+	item: accessible,
+}
+record text-selection-changed-event {
+	item: accessible,
+}
+record text-changed-event {
+	item: accessible,
+	detail: string,
+	start-pos: s32,
+	length: s32,
+	text: string}
+record text-attributes-changed-event {
+	item: accessible,
+}
+record text-caret-moved-event {
+	item: accessible,
+	position: s32}

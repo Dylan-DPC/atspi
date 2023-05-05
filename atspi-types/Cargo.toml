@@ -5,6 +5,16 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = []
+zbus = ["dep:zbus"]
+
 [dependencies]
-zbus_names = "2.5.0"
-zvariant = "3.12.0"
+zbus_names.workspace = true
+zvariant.workspace = true
+serde.workspace = true
+convert_case = "0.6.0"
+serde-xml-rs = "0.6.0"
+wai-bindgen-rust = "0.2.3"
+static_assertions = "1.1.0"
+zbus = { version = "3.12", optional = true }

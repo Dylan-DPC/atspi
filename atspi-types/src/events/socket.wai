@@ -1,0 +1,7 @@
+use * from types
+variant socket-events {
+	available(available-event),
+}
+record available-event {
+	item: accessible,
+	socket: tuple<string, string>}

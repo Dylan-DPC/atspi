@@ -1,0 +1,79 @@
+use * from types
+variant window-events {
+	property-change(property-change-event),
+	minimize(minimize-event),
+	maximize(maximize-event),
+	restore(restore-event),
+	close(close-event),
+	create(create-event),
+	reparent(reparent-event),
+	desktop-create(desktop-create-event),
+	desktop-destroy(desktop-destroy-event),
+	destroy(destroy-event),
+	activate(activate-event),
+	deactivate(deactivate-event),
+	raise(raise-event),
+	lower(lower-event),
+	move(move-event),
+	resize(resize-event),
+	shade(shade-event),
+	u-ushade(u-ushade-event),
+	restyle(restyle-event),
+}
+record property-change-event {
+	item: accessible,
+	property: string}
+record minimize-event {
+	item: accessible,
+}
+record maximize-event {
+	item: accessible,
+}
+record restore-event {
+	item: accessible,
+}
+record close-event {
+	item: accessible,
+}
+record create-event {
+	item: accessible,
+}
+record reparent-event {
+	item: accessible,
+}
+record desktop-create-event {
+	item: accessible,
+}
+record desktop-destroy-event {
+	item: accessible,
+}
+record destroy-event {
+	item: accessible,
+}
+record activate-event {
+	item: accessible,
+}
+record deactivate-event {
+	item: accessible,
+}
+record raise-event {
+	item: accessible,
+}
+record lower-event {
+	item: accessible,
+}
+record move-event {
+	item: accessible,
+}
+record resize-event {
+	item: accessible,
+}
+record shade-event {
+	item: accessible,
+}
+record u-ushade-event {
+	item: accessible,
+}
+record restyle-event {
+	item: accessible,
+}
